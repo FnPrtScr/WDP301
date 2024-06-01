@@ -5,6 +5,7 @@ const Semester = lazy(() => import('../../views/pages/head-of-department/semeste
 const Classes = lazy(() => import('../../views/pages/head-of-department/classes/index'))
 const Lecture = lazy(() => import('../../views/pages/head-of-department/lecture/index'))
 const Score = lazy(() => import('../../views/pages/head-of-department/mark-report/index'))
+const Setting = lazy(() => import('../../views/pages/head-of-department/setting/index'))
 
 const HeadOfDepartmentRoutes = [
   {
@@ -26,6 +27,10 @@ const HeadOfDepartmentRoutes = [
   {
     path: '/head-of-department/mark-report',
     element: <Score />
+  },
+  {
+    path: '/head-of-department/setting',
+    element: <Setting />
   }
 ]
 

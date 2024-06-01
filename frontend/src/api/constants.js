@@ -13,6 +13,10 @@ export const AUTH = {
   CAMPUS_API: {
     GET_CAMPUS_API: `${BASE_URL}/campus/`
   },
+  SETTING_API: {
+    UPDATE_SETTING_API: `${BASE_URL}/setting`,
+    GET_ONE_SETTING_API: `${BASE_URL}/setting`
+  },
   SEMESTER_API: {
     GET_SEMESTER_API: `${BASE_URL}/semester/g`,
     GET_DEADLINE_SEMESTER_API: `${BASE_URL}/semester`,

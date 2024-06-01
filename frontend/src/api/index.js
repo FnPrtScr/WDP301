@@ -1,6 +1,7 @@
 import authApi from './auth'
 import campusApi from './campus'
 import semesterApi from './semester'
+import settingApi from './setting'
 import userRoleSemesterApi from './userRoleSemester'
 import userClassSemesterApi from './userClassSemester'
 import classesApi from './Classes'
@@ -25,6 +26,7 @@ const api = {
   ...authApi,
   ...campusApi,
   ...semesterApi,
+  ...settingApi,
   ...userRoleSemesterApi,
   ...userClassSemesterApi,
   ...classesApi,
