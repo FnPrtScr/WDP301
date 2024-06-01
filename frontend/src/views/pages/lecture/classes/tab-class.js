@@ -55,6 +55,7 @@ const CustomHeader = ({ handleAdd, handleImport }) => {
 
 const tabClass = () => {
   const { t } = useTranslation()
+  
   const {
     setDataItem,
     handleModal,

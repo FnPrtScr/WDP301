@@ -1,9 +1,9 @@
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag, Modal, Space, Tooltip } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import Select from 'react-select'
 import {
@@ -22,16 +22,18 @@ import '.././table.css'
 import api from '../../../../api'
 import { notificationError, notificationSuccess } from '../../../../utility/notification'
 import { getSocket } from '../../../../serviceWorker'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ handleAdd, handleImport, handleFilter }) => {
+const CustomHeader = ({ handleAdd, handleImport, handleFilter, refSearch, refBtnImportLerturer, refBtnAddLerturer }) => {
   const { t } = useTranslation()
   const [searchText, setSearchTerm] = useState('')
 
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref = {refSearch}>
         <InputGroup className='my-25'>
           <Input
             id='search-invoice'
@@ -52,16 +54,22 @@ const CustomHeader = ({ handleAdd, handleImport, handleFilter }) => {
             <SearchOutlined></SearchOutlined>
           </span>
         </InputGroup>
+        </div>
+        
         <div className='d-flex align-items-center mx-50' style={{ minWidth: "220px", maxWidth: "220px" }}>
         </div>
       </div>
       <div className='d-flex justify-content-end mx-2'>
+        <div ref = {refBtnImportLerturer}>
         <Button className='add-new-user mx-25 my-25' color='primary' onClick={handleImport}>
           {t('Import Lecturer')}
         </Button>
+        </div>
+        <div ref = {refBtnAddLerturer}>
         <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
           {t('Add Lecturer')}
         </Button>
+        </div>               
       </div>
     </div >
   )
@@ -69,6 +77,14 @@ const CustomHeader = ({ handleAdd, handleImport, handleFilter }) => {
 
 const Position = () => {
   const { t } = useTranslation()
+  //
+  const refSearch = useRef(null)
+  const refBtnImportLerturer = useRef(null)
+  const refBtnAddLerturer = useRef(null)
+  const refTable = useRef(null)
+  const refPagination = useRef(null)
+  // khai báo state để mở định nghĩa
+  const [openNote, setOpenNote] = useState(false) 
   const {
     setDataItem,
     handleModal,
@@ -90,6 +106,35 @@ const Position = () => {
       current: 1
     }
   })
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by List Lecturer",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Button Import Lecturer",
+      description: "You can open modal to Import Lecturer",
+      target: () => refBtnImportLerturer.current
+    },
+    {
+      title: "Button Add Lecturer ",
+      description: "You can open modal to add lecturer",
+      target: () => refBtnAddLerturer.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list lecturer",
+      target: () => refTable.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      placement: 'Bottom',
+      target: () => refPagination.current
+    }
+  ]
   const roles = [
     { roleId: 1, roleName: 'HeadOfDepartment' },
     { roleId: 2, roleName: 'Lecturer' },
@@ -353,7 +398,15 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List Lecturer')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -363,10 +416,14 @@ const Position = () => {
               handleFilter={handleFilter}
               handleAdd={handleAdd}
               handleImport={handleImport}
+              refSearch={refSearch}
+              refBtnImportLerturer={refBtnImportLerturer}
+              refBtnAddLerturer={refBtnAddLerturer}
+
             />
           </Col>
         </Row>
-        <div className='react-dataTable mx-2'>
+        <div className='react-dataTable mx-2' ref={refTable}>
           <Table
             dataSource={data}
             bordered
@@ -380,9 +437,18 @@ const Position = () => {
             }}
             rowClassName={getRowClassName}
           ></Table>
+          <div ref = {refPagination}>
           <CustomPagination />
+          </div>
+          
         </div>
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
+
     </Fragment >
   )
 }

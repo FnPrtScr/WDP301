@@ -1,15 +1,20 @@
-import { Fragment, useState, useContext, useEffect, Children } from 'react'
+import { Fragment, useState, useContext, useEffect, Children, useRef } from 'react'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, List, Avatar } from 'antd'
+import { Table, List, Avatar, Button, Tour } from 'antd'
 import { Card } from 'reactstrap'
 import { UserContext } from './useContext'
 import api from '../../../../api'
 import '.././table.css'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 
 const Position = () => {
   const { t } = useTranslation()
+  //
+  const refTable = useRef(null)  
+  // khai báo state để mở định nghĩa
+  const [openNote, setOpenNote] = useState(false) 
   const {
     windowSize
   } = useContext(UserContext)
@@ -18,6 +23,15 @@ const Position = () => {
   const campus = window.localStorage.getItem('campus')
   const semester = window.localStorage.getItem('semester')
   //const userData = getUserData()
+  // Đinh nghĩa 
+  const steps = [
+    {
+      title: "Table mark-report",
+      description: "View list mark-report",
+      target: () => refTable.current
+    }
+
+  ]
   const fetchData = () => {
     setLoading(true)
     api.pointApi.getTopTeamByClassApi({}, campus, semester)
@@ -142,8 +156,16 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex justify-content-between align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Top Team In Semester')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill/>}
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <div className='react-dataTable mx-2 mb-2'>
+          <div ref = {refTable}>
           <Table
             dataSource={data}
             bordered
@@ -156,8 +178,15 @@ const Position = () => {
             }}
             rowClassName={getRowClassName}
           ></Table>
+          </div>
+          
         </div>
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }

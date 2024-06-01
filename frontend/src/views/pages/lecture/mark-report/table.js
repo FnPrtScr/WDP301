@@ -1,9 +1,9 @@
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag, Modal, Space, Tooltip, Checkbox, Empty } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Checkbox, Empty, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import Select from 'react-select'
 import { Card, Input, Button, Badge, Col, Row, InputGroup, Label } from 'reactstrap'
@@ -14,13 +14,14 @@ import api from '../../../../api'
 import '../../../../styles/table.css'
 import { Controller, useForm } from 'react-hook-form'
 import * as Utils from '@utils'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 const MySwal = withReactContent(Swal)
 const defaultValues = {
   class_id: 0,
   mileStone_id: 0
 }
 // ** Table Header
-const CustomHeader = ({ handleFilter }) => {
+const CustomHeader = ({ handleFilter, refSearch }) => {
   const { t } = useTranslation()
 
   const [searchText, setSearchTerm] = useState('')
@@ -28,6 +29,7 @@ const CustomHeader = ({ handleFilter }) => {
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref={refSearch}>
         <InputGroup className='my-25'>
           <Input
             id='search-invoice'
@@ -49,6 +51,8 @@ const CustomHeader = ({ handleFilter }) => {
             <SearchOutlined></SearchOutlined>
           </span>
         </InputGroup>
+        </div>
+        
 
       </div>
       <div className='d-flex justify-content-end mx-2'>
@@ -59,6 +63,12 @@ const CustomHeader = ({ handleFilter }) => {
 
 const Position = () => {
   const { t } = useTranslation()
+  //
+  const refSearch = useRef()
+  const refTable = useRef()
+  //
+   // khai báo state để mở định nghĩa
+   const [openNote, setOpenNote] = useState(false)
   const {
     windowSize,
     loadTable
@@ -90,6 +100,19 @@ const Position = () => {
   const [dataClass, setDataClass] = useState([])
   const [classId, setClassId] = useState(null)
   const [mileStoneId, setMileStoneId] = useState(null)
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by reports",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list reports",
+      target: () => refTable.current
+    }
+  ]
   useEffect(() => {
     if (dataProject) {
       const parsedDataProject = JSON.parse(dataProject)
@@ -257,7 +280,15 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Mark In Semester')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -265,10 +296,11 @@ const Position = () => {
               setcurrentStatus={setcurrentStatus}
               searchTerm={searchTerm}
               handleFilter={handleFilter}
+              refSearch={refSearch}
             />
           </Col>
         </Row>
-        <div className='react-dataTabs mx-2 mt-2'>
+        <div className='react-dataTabs mx-2 mt-2' ref={refTable}>
           <div className='border p-1 mb-2' style={{ backgroundColor: 'white', borderRadius: '10px' }}>
             <Row className='gy-1'>
               <Col className='mb-1' md='12' sm='12'>
@@ -353,6 +385,11 @@ const Position = () => {
           </>
         )}
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }

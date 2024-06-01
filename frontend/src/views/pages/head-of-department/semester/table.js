@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
+import { BsFillQuestionCircleFill } from "react-icons/bs"
 import Select from 'react-select'
 import {
   Card,
@@ -28,35 +29,45 @@ import { getSocket } from '../../../../serviceWorker'
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ handleAdd, handleFilter, currentStatus, setcurrentStatus }) => {
+const CustomHeader = ({
+  handleAdd,
+  handleFilter,
+  currentStatus,
+  setcurrentStatus,
+  refSearch,
+  refSelectYear,
+  refBtnAdd
+}) => {
   const { t } = useTranslation()
   const [searchText, setSearchTerm] = useState('')
 
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
-      < div className='d-flex align-items-centerm mx-50'>
-        <InputGroup className='my-25'>
-          <Input
-            id='search-invoice'
-            style={{ minWidth: '200px' }}
-            placeholder={t('Search')}
-            type='search'
-            value={searchText}
-            onChange={e => {
-              if (e.target.value) {
-                setSearchTerm(e.target.value)
-              } else {
-                handleFilter('')
-                setSearchTerm(e.target.value)
-              }
+      <div className='d-flex align-items-center mx-50'>
+        <div ref={refSearch}>
+          <InputGroup className='my-25'>
+            <Input
+              id='search-invoice'
+              style={{ minWidth: '200px' }}
+              placeholder={t('Search')}
+              type='search'
+              value={searchText}
+              onChange={e => {
+                if (e.target.value) {
+                  setSearchTerm(e.target.value)
+                } else {
+                  handleFilter('')
+                  setSearchTerm(e.target.value)
+                }
 
-            }}
-          />
-          <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
-            <SearchOutlined></SearchOutlined>
-          </span>
-        </InputGroup>
-        <div style={{ minWidth: "220px", maxWidth: "220px", marginLeft: '2rem' }}>
+              }}
+            />
+            <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
+              <SearchOutlined></SearchOutlined>
+            </span>
+          </InputGroup>
+        </div>
+        <div style={{ minWidth: "220px", maxWidth: "220px", marginLeft: '2rem' }} ref={refSelectYear}>
           <DatePicker
             picker="year"
             className='my-25 w-100'
@@ -66,8 +77,7 @@ const CustomHeader = ({ handleAdd, handleFilter, currentStatus, setcurrentStatus
           />
         </div>
       </div>
-
-      <div className='d-flex justify-content-end mx-2'>
+      <div className='d-flex justify-content-end mx-2' ref={refBtnAdd}>
         <Button className='add-new-semester  mx-50  my-25' color='primary' onClick={handleAdd}>
           {t('Add')}
         </Button>
@@ -78,6 +88,14 @@ const CustomHeader = ({ handleAdd, handleFilter, currentStatus, setcurrentStatus
 
 const Position = () => {
   const { t } = useTranslation()
+  // khai bao ref của những phần tử cần định nghĩa
+  const refSearch = useRef(null)
+  const refSelectYear = useRef(null)
+  const refBtnAdd = useRef(null)
+  const refTable = useRef(null)
+  const refPagination = useRef(null)
+  // khai báo state để mở định nghĩa
+  const [openNote, setOpenNote] = useState(false) 
   const {
     setDataItem,
     handleModal,
@@ -98,6 +116,37 @@ const Position = () => {
   const [tableParams, setTableParams] = useState({
   })
   const campus = window.localStorage.getItem('campus')
+
+  // Đinh nghĩa 
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by Semester Name",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Select year",
+      description: "You can filter by Start date and End date",
+      target: () => refSelectYear.current
+    },
+    {
+      title: "Button Add",
+      description: "You can open modal to add semesters",
+      target: () => refBtnAdd.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list semesters",
+      target: () => refTable.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      placement: 'rightBottom',
+      target: () => refPagination.current
+    }
+  ]
 
   const handleTableChange = (pagination, filters, sorter) => {
     setCurrentPage(pagination.current)
@@ -169,23 +218,23 @@ const Position = () => {
     const countPage = Number(Math.ceil(totalItems))
     return (
       <div className='d-flex align-items-center w-100 justify-content-between'>
-        <div className='ps-2'>
+        <div ref={refPagination}>
+          <ReactPaginate
+            previousLabel={''}
+            nextLabel={''}
+            pageCount={countPage || 1}
+            activeClassName='active'
+            forcePage={currentPage !== 0 ? currentPage - 1 : 0}
+            onPageChange={page => handlePagination(page)}
+            pageClassName={'page-item'}
+            nextLinkClassName={'page-link'}
+            nextClassName={'page-item next'}
+            previousClassName={'page-item prev'}
+            previousLinkClassName={'page-link'}
+            pageLinkClassName={'page-link'}
+            containerClassName={'pagination react-paginate justify-content-end my-2 pe-1'}
+          />
         </div>
-        <ReactPaginate
-          previousLabel={''}
-          nextLabel={''}
-          pageCount={countPage || 1}
-          activeClassName='active'
-          forcePage={currentPage !== 0 ? currentPage - 1 : 0}
-          onPageChange={page => handlePagination(page)}
-          pageClassName={'page-item'}
-          nextLinkClassName={'page-link'}
-          nextClassName={'page-item next'}
-          previousClassName={'page-item prev'}
-          previousLinkClassName={'page-link'}
-          pageLinkClassName={'page-link'}
-          containerClassName={'pagination react-paginate justify-content-end my-2 pe-1'}
-        />
       </div >
     )
   }
@@ -326,7 +375,14 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
-        <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Semester')}</h2>
+        <div className='d-flex align-items-center'>
+          <h2 style={{ fontWeight: '700' }} className='px-2'>{t('Semester')}</h2>
+          <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -335,11 +391,15 @@ const Position = () => {
               searchTerm={searchTerm}
               handleFilter={handleFilter}
               handleAdd={handleAdd}
+              refSearch={refSearch}
+              refSelectYear={refSelectYear}
+              refBtnAdd={refBtnAdd}
+              setOpenNote={setOpenNote}
             // handleExport={handleExport}
             />
           </Col>
         </Row>
-        <div className='react-dataTable mx-2'>
+        <div className='react-dataTable mx-2' ref={refTable}>
           <Table
             // style={{ height: windowSize.innerHeight - 280 }}
             dataSource={data}
@@ -355,9 +415,16 @@ const Position = () => {
             }}
             rowClassName={getRowClassName}
           ></Table>
+        </div>
+        <div ref={refPagination}>
           <CustomPagination />
         </div>
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }

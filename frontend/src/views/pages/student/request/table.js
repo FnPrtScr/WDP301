@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import Select from 'react-select'
 import {
@@ -24,11 +24,12 @@ import api from '../../../../api'
 import { notificationSuccess, notificationError } from '../../../../utility/notification'
 import dayjs from 'dayjs'
 import { PUBLIC_URL_SERVER, PUBLIC_URL_SERVER_API } from "../../../../dataConfig"
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ handleAdd, optionStatus, status, setStatus }) => {
+const CustomHeader = ({ handleAdd, optionStatus, status, setStatus, refOption, refBtnAdd }) => {
   const { t } = useTranslation()
   const [searchText, setSearchTerm] = useState('')
 
@@ -36,7 +37,7 @@ const CustomHeader = ({ handleAdd, optionStatus, status, setStatus }) => {
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
         <div style={{ minWidth: "200px", maxWidth: "200px" }}>
-          <Select
+          <div ref={refOption}><Select
             className='my-25 react-select w-100'
             classNamePrefix='select'
             menuPosition="fixed"
@@ -48,8 +49,9 @@ const CustomHeader = ({ handleAdd, optionStatus, status, setStatus }) => {
             }}
           />
         </div>
-      </div>
-      <div className='d-flex justify-content-end mx-2'>
+      </div></div>
+          
+      <div className='d-flex justify-content-end mx-2' ref={refBtnAdd}>
         <Button className='add-new-semester  mx-50  my-25' color='primary' onClick={handleAdd}>
           {t('Add')}
         </Button>
@@ -60,6 +62,12 @@ const CustomHeader = ({ handleAdd, optionStatus, status, setStatus }) => {
 
 const Position = () => {
   const { t } = useTranslation()
+  // 
+  const refOption = useRef(null)
+   const refBtnAdd = useRef(null)
+   const refTable = useRef(null)
+   //
+   const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -75,6 +83,24 @@ const Position = () => {
 
   const [data, setData] = useState([])
   const [status, setStatus] = useState(0)
+  const steps = [
+    {
+      title: "Opyion",
+      description: "You can choose option",
+      placement: 'rightBottom',
+      target: () => refOption.current
+    },
+    {
+      title: "Button Add",
+      description: "You can open modal to add classes",
+      target: () => refBtnAdd.current
+    },
+    {
+      title: "Table request",
+      description: "View list request",
+      target: () => refTable.current
+    }
+  ]
   const optionStatus = [
     { value: 0, label: 'Processing' },
     { value: 1, label: 'Approved' },
@@ -227,7 +253,15 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Request')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -236,10 +270,12 @@ const Position = () => {
               status={status}
               setStatus={setStatus}
             // handleExport={handleExport}
+            refBtnAdd={refBtnAdd}
+              refOption={refOption}
             />
           </Col>
         </Row>
-        <div className='react-dataTable mx-2 mb-2'>
+        <div className='react-dataTable mx-2 mb-2' ref={refTable}>
           <Table
             // style={{ height: windowSize.innerHeight - 280 }}
             dataSource={data}
@@ -254,6 +290,11 @@ const Position = () => {
           ></Table>
         </div>
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }

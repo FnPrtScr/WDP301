@@ -1,9 +1,9 @@
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag, Modal, Space, Tooltip, Avatar, Card as AntdCard, Empty } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Avatar, Card as AntdCard, Empty, Tour } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons"
 import Select from 'react-select'
@@ -23,11 +23,12 @@ import api from '../../../../api'
 import { notificationError, notificationSuccess } from '../../../../utility/notification'
 import { getUserData } from '@utils'
 import { getSocket } from '../../../../serviceWorker'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ handleFilter, handleAdd }) => {
+const CustomHeader = ({ handleFilter, handleAdd, refSearch, refBtnAdd }) => {
   const { t } = useTranslation()
   //const isDefaultOptions = [
   //  { value: true, label: t('Active') },
@@ -38,6 +39,7 @@ const CustomHeader = ({ handleFilter, handleAdd }) => {
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref={refSearch}>
         <InputGroup className='my-25'>
           <Input
             id='search-invoice'
@@ -59,6 +61,8 @@ const CustomHeader = ({ handleFilter, handleAdd }) => {
             <SearchOutlined></SearchOutlined>
           </span>
         </InputGroup>
+        </div>
+        
         {/*<div className='d-flex align-items-center mx-50' style={{ minWidth: "220px", maxWidth: "220px" }}>
           <Select
             //theme={selectThemeColors}
@@ -75,7 +79,7 @@ const CustomHeader = ({ handleFilter, handleAdd }) => {
           />
         </div>*/}
       </div>
-      <div className='d-flex justify-content-end mx-2'>
+      <div className='d-flex justify-content-end mx-2' ref={refBtnAdd}>
         <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
           {t('Add My Class')}
         </Button>
@@ -86,6 +90,12 @@ const CustomHeader = ({ handleFilter, handleAdd }) => {
 
 const Position = () => {
   const { t } = useTranslation()
+   //
+   const refSearch = useRef(null)
+   const refBtnAdd = useRef(null)
+   const refTable = useRef(null)
+   //
+   const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -111,6 +121,25 @@ const Position = () => {
       current: 1
     }
   })
+  //
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by class name",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Button Add",
+      description: "You can open modal to add classes",
+      target: () => refBtnAdd.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list classes",
+      target: () => refTable.current
+    }
+  ]
   //const role = window.localStorage.getItem('role')
   const campus = window.localStorage.getItem('campus')
   const semester = window.localStorage.getItem('semester')
@@ -287,7 +316,15 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('My Class')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -296,10 +333,12 @@ const Position = () => {
               searchTerm={searchTerm}
               handleFilter={handleFilter}
               handleAdd={handleAdd}
+              refBtnAdd={refBtnAdd}
+              refSearch={refSearch}
             />
           </Col>
         </Row>
-        <div className='react-dataCard mx-2'>
+        <div className='react-dataCard mx-2' ref = {refTable}>
           <Row>
             {data.length === 0 ? (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -348,6 +387,11 @@ const Position = () => {
         </div>
         {/*<CustomPagination />*/}
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 

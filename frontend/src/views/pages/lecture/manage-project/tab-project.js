@@ -1,10 +1,10 @@
-import { Fragment, useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { Card, Input, Button, Badge, Col, Row, InputGroup } from 'reactstrap'
 import { useTranslation } from 'react-i18next'
 import { ProjectContext } from './useContext'
 import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../../../../api'
-import { Tabs, Table, Tag, Modal, Space, Tooltip, Avatar, List, Card as AntdCard } from 'antd'
+import { Tabs, Table, Tag, Modal, Space, Tooltip, Avatar, List, Card as AntdCard, Tour } from 'antd'
 import { EditOutlined, ExportOutlined, SearchOutlined, DeleteOutlined, EyeOutlined, PlusCircleOutlined, ArrowLeftOutlined } from "@ant-design/icons"
 import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2'
@@ -13,10 +13,11 @@ import ReactPaginate from 'react-paginate'
 import { PUBLIC_URL_SERVER, PUBLIC_URL_SERVER_API } from "../../../../dataConfig"
 import '../../../../styles/table.css'
 import { getSocket } from '../../../../serviceWorker'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 const MySwal = withReactContent(Swal)
 
 // ** Table Header tab 1
-const CustomHeader1 = ({ handleAddProject, handleFilter1 }) => {
+const CustomHeader1 = ({ handleAddProject, handleFilter1, refSearch, refBtnAdd }) => {
   const { t } = useTranslation()
   //const isDefaultOptions = [
   //  { value: true, label: t('Active') },
@@ -27,6 +28,7 @@ const CustomHeader1 = ({ handleAddProject, handleFilter1 }) => {
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref={refSearch}>
         <InputGroup className='my-25'>
           <Input
             id='search-invoice'
@@ -48,8 +50,10 @@ const CustomHeader1 = ({ handleAddProject, handleFilter1 }) => {
             <SearchOutlined></SearchOutlined>
           </span>
         </InputGroup>
+        </div>
+        
       </div>
-      <div className='d-flex justify-content-end mx-2'>
+      <div className='d-flex justify-content-end mx-2' ref={refBtnAdd}>
         <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAddProject}>
           {t('Add Project')}
         </Button>
@@ -58,13 +62,14 @@ const CustomHeader1 = ({ handleAddProject, handleFilter1 }) => {
   )
 }
 // ** Table Header tab 2
-const CustomHeader = ({ handleFilter }) => {
+const CustomHeader = ({ handleFilter, refSearch2 }) => {
   const { t } = useTranslation()
   const [searchText, setSearchTerm] = useState('')
 
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref={refSearch2}>
         <InputGroup className='my-25'>
           <Input
             id='search-invoice'
@@ -86,6 +91,8 @@ const CustomHeader = ({ handleFilter }) => {
             <SearchOutlined></SearchOutlined>
           </span>
         </InputGroup>
+        </div>
+        
       </div>
     </div >
   )
@@ -93,6 +100,19 @@ const CustomHeader = ({ handleFilter }) => {
 
 const tabClass = () => {
   const { t } = useTranslation()
+  //
+  
+  const refSearch = useRef(null)
+  const refSearch2 = useRef(null)
+  const refBtnAdd = useRef(null)
+  const refTableOne = useRef(null)
+  const refPaginationOne = useRef(null)
+  const refTableTwo = useRef(null)
+  const refPaginationTwo = useRef(null)
+  const refTableThree = useRef(null)
+  const refPaginationThree = useRef(null)
+  // khai báo state để mở định nghĩa
+  const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -122,6 +142,53 @@ const tabClass = () => {
       current: 1
     }
   })
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by List lecturer project",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Button Add Project",
+      description: "You can open modal to add semesters",
+      target: () => refBtnAdd.current
+    },
+    {
+      title: "Table list lecturers",
+      description: "View list semesters",
+      target: () => refTableOne.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      placement: 'Bottom',
+      target: () => refPaginationOne.current
+    },
+    {
+      title: "Table list lecturers",
+      description: "View list semesters",
+      target: () => refTableTwo.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      placement: 'Bottom',
+      target: () => refPaginationTwo.current
+    },
+    {
+      title: "Table list lecturers",
+      description: "View list semesters",
+      target: () => refTableThree.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      placement: 'Bottom',
+      target: () => refPaginationThree.current
+    }
+
+  ]
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -625,7 +692,15 @@ const tabClass = () => {
 
         <Fragment >
           <Card className='overflow-hidden'>
+            <div className='d-flex align-items-center'>
             <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List lecturer Project')}</h2>
+            <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+            </div>
+            
             <Row>
               <Col xl={12} lg={12} md={12}>
                 <CustomHeader1
@@ -634,10 +709,12 @@ const tabClass = () => {
                   searchTermGroup={searchTermGroup}
                   handleFilter1={handleFilter1}
                   handleAddProject={handleAddProject}
+                  refSearch={refSearch}
+                  refBtnAdd={refBtnAdd}
                 />
               </Col>
             </Row>
-            <div className='react-dataTable mx-2'>
+            <div className='react-dataTable mx-2' ref={refTableOne}>
               <Table
                 // style={{ height: windowSize.innerHeight - 280 }}
                 dataSource={dataProject}
@@ -652,10 +729,16 @@ const tabClass = () => {
                 }}
                 rowClassName={getRowClassName}
               ></Table>
+              <div ref={refPaginationOne}>
               <CustomPagination />
+              </div>
+              
             </div>
+            
             <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List student Project')}</h2>
-            <div className='react-dataTable mx-2 mt-2'>
+                     
+            <div className='react-dataTable mx-2 mt-2' ref={refTableTwo}>
+              
               <Table
                 // style={{ height: windowSize.innerHeight - 280 }}
                 dataSource={dataProjectForRequestTopic}
@@ -670,9 +753,17 @@ const tabClass = () => {
                 }}
                 rowClassName={getRowClassName}
               ></Table>
+              <div ref={refPaginationTwo}>
               <CustomPagination />
+              </div>
+              
             </div>
           </Card>
+          <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
         </Fragment >
       )
     },
@@ -683,6 +774,11 @@ const tabClass = () => {
         <Fragment >
           <Card className='overflow-hidden'>
             <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List All Team Project')}</h2>
+            <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
             <Row>
               <Col xl={12} lg={12} md={12}>
                 <CustomHeader
@@ -690,10 +786,11 @@ const tabClass = () => {
                   //setcurrentStatus={setcurrentStatus}
                   searchTerm={searchTerm}
                   handleFilter={handleFilter}
+                  refSearch2={refSearch2}
                 />
               </Col>
             </Row>
-            <div className='react-dataTable mx-2'>
+            <div className='react-dataTable mx-2' ref={refTableThree}>
               <Table
                 // style={{ height: windowSize.innerHeight - 280 }}
                 dataSource={dataTeamProject}
@@ -708,9 +805,11 @@ const tabClass = () => {
                 }}
                 rowClassName={getRowClassName}
               ></Table>
-              <CustomPagination />
+              <div ref={refPaginationThree}> <CustomPagination /></div>
+             
             </div>
           </Card>
+          
         </Fragment >
       )
     }
@@ -724,7 +823,7 @@ const tabClass = () => {
           </Tabs>
         </div>
       </Card>
-
+      
     </Fragment>
   )
 }

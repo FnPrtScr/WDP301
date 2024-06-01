@@ -1,9 +1,9 @@
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import ReactPaginate from 'react-paginate'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
-import { Table, Tag, Modal, Space, Tooltip, Checkbox } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Checkbox, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import Select from 'react-select'
 import {
@@ -22,42 +22,42 @@ import api from '../../../../api'
 import { notificationError, notificationSuccess } from '../../../../utility/notification'
 import '.././table.css'
 import { getSocket } from '../../../../serviceWorker'
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ handleAdd, handleImport, handleFilter }) => {
+const CustomHeader = ({ handleAdd, handleImport, handleFilter, refSearch, refBtnImportClass, refBtnAdd }) => {
   const { t } = useTranslation()
-  //const isDefaultOptions = [
-  //  { value: true, label: t('Active') },
-  //  { value: false, label: t('Inactive') }
-  //]
   const [searchText, setSearchTerm] = useState('')
 
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
-        <InputGroup className='my-25'>
-          <Input
-            id='search-invoice'
-            style={{ minWidth: '200px' }}
-            placeholder={t('Search')}
-            type='search'
-            value={searchText}
-            onChange={e => {
-              if (e.target.value) {
-                setSearchTerm(e.target.value)
-              } else {
-                handleFilter('')
-                setSearchTerm(e.target.value)
-              }
+        <div ref={refSearch}>
+          <InputGroup className='my-25'>
+            <Input
+              id='search-invoice'
+              style={{ minWidth: '200px' }}
+              placeholder={t('Search')}
+              type='search'
+              value={searchText}
+              onChange={e => {
+                if (e.target.value) {
+                  setSearchTerm(e.target.value)
+                } else {
+                  handleFilter('')
+                  setSearchTerm(e.target.value)
+                }
 
-            }}
-          />
-          <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
-            <SearchOutlined></SearchOutlined>
-          </span>
-        </InputGroup>
+              }}
+            />
+            <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
+              <SearchOutlined></SearchOutlined>
+            </span>
+          </InputGroup>
+        </div>
+
         {/*<div className='d-flex align-items-center mx-50' style={{ minWidth: "220px", maxWidth: "220px" }}>
           <Select
             //theme={selectThemeColors}
@@ -74,20 +74,35 @@ const CustomHeader = ({ handleAdd, handleImport, handleFilter }) => {
           />
         </div>*/}
       </div>
-      <div className='d-flex justify-content-end mx-2'>
-        <Button className='add-new-user mx-25 my-25' color='primary' onClick={handleImport}>
-          {t('Import Class')}
-        </Button>
-        <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
-          {t('Add')}
-        </Button>
+      <div className='d-flex justify-content-end mx-2' >
+        <div ref={refBtnImportClass}>
+          <Button className='add-new-user mx-25 my-25' color='primary' onClick={handleImport}>
+            {t('Import Class')}
+          </Button>
+        </div >
+        <div ref={refBtnAdd}>
+          <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
+            {t('Add')}
+          </Button>
+        </div>
+
       </div>
+
     </div >
   )
 }
 
 const Position = () => {
+  //
   const { t } = useTranslation()
+  const refSearch = useRef(null)
+  const refBtnImportClass = useRef(null)
+  const refBtnAdd = useRef(null)
+  const refTableOne = useRef(null)
+  const refPagination = useRef(null)
+  const refTableTwo = useRef(null)
+  //
+  const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -114,6 +129,41 @@ const Position = () => {
       current: 1
     }
   })
+  //
+  const steps = [
+    {
+      title: "Search",
+      description: "You can filter by Class Name",
+      placement: 'rightBottom',
+      target: () => refSearch.current
+    },
+    {
+      title: "Button Import Class",
+      description: "You can open modal to import a class",
+      target: () => refBtnImportClass.current
+    },
+    {
+      title: "Button Add",
+      description: "You can open modal to add classes",
+      target: () => refBtnAdd.current
+    },
+    {
+      title: "Table manage class in semester",
+      description: "View list classes",
+      target: () => refTableOne.current
+    },
+    {
+      title: "Pagination",
+      description: "You can paginate your seme",
+      // placement: 'Bottom',
+      target: () => refPagination.current
+    },
+    {
+      title: "Table manage class resit in semester",
+      description: "View list classes",
+      target: () => refTableTwo.current
+    }
+  ]
   const campus = window.localStorage.getItem('campus')
   const semester = window.localStorage.getItem('semester')
   //const userData = getUserData()
@@ -583,20 +633,30 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+      <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Class In Semester')}</h2>
+        <Button
+          color="secondary"
+          icon={<BsFillQuestionCircleFill />}
+          onClick={() => setOpenNote(true)} />
+          </div>
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
               currentStatus={currentStatus}
               setcurrentStatus={setcurrentStatus}
               searchTerm={searchTerm}
+              refSearch={refSearch}
               handleFilter={handleFilter}
               handleAdd={handleAdd}
               handleImport={handleImport}
+              refBtnAdd={refBtnAdd}
+              refBtnImportClass={refBtnImportClass}
+
             />
           </Col>
         </Row>
-        <div className='react-dataTable mx-2'>
+        <div className='react-dataTable mx-2' ref={refTableOne}>
           <Table
             dataSource={data}
             bordered
@@ -612,24 +672,35 @@ const Position = () => {
           ></Table>
           <CustomPagination />
         </div>
-        <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Class Resit In Semester')}</h2>
-        <div className='react-dataTable mx-2 mb-2'>
-          <Table
-            dataSource={dataResit}
-            bordered
-            columns={headerRestiColumns}
-            pagination={false}
-            onChange={handleTableChange}
-            loading={loading}
-            scroll={{
-              x: 'max-content',
-              y: windowSize.innerHeight - 280
-            }}
-            rowClassName={getRowClassName}
-          ></Table>
-          {/*<CustomPagination />*/}
+        <div ref={refPagination}>
+          <CustomPagination />
         </div>
+        <div ref={refTableTwo}>
+          <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Class Resit In Semester')}</h2>
+          <div className='react-dataTable mx-2 mb-2'>
+            <Table
+              dataSource={dataResit}
+              bordered
+              columns={headerRestiColumns}
+              pagination={false}
+              onChange={handleTableChange}
+              loading={loading}
+              scroll={{
+                x: 'max-content',
+                y: windowSize.innerHeight - 280
+              }}
+              rowClassName={getRowClassName}
+            ></Table>
+            {/*<CustomPagination />*/}
+          </div>
+        </div>
+
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }

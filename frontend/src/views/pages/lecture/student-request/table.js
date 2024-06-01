@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { Fragment, useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useContext, useEffect, useRef } from 'react'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker } from 'antd'
+import { Table, Tag, Modal, Space, Tooltip, Switch, DatePicker, Tour } from 'antd'
 import { EditOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import Select from 'react-select'
 import {
@@ -23,10 +23,11 @@ import api from '../../../../api'
 import { notificationSuccess, notificationError } from '../../../../utility/notification'
 import dayjs from 'dayjs'
 import { PUBLIC_URL_SERVER_API } from "../../../../dataConfig"
+import { BsFillQuestionCircleFill } from 'react-icons/bs'
 const MySwal = withReactContent(Swal)
 
 // ** Table Header
-const CustomHeader = ({ status, setStatus }) => {
+const CustomHeader = ({ status, setStatus, refOpition }) => {
   const { t } = useTranslation()
   const optionStatus = [
     { value: 'processing', label: 'Processing' },
@@ -37,6 +38,7 @@ const CustomHeader = ({ status, setStatus }) => {
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
+        <div ref={refOpition}>
         <Select
           className='my-25 react-select w-100'
           classNamePrefix='select'
@@ -48,6 +50,8 @@ const CustomHeader = ({ status, setStatus }) => {
             setStatus(data)
           }}
         />
+        </div>
+        
         <div style={{ minWidth: "220px", maxWidth: "220px", marginLeft: '2rem' }}>
         </div>
       </div>
@@ -57,6 +61,12 @@ const CustomHeader = ({ status, setStatus }) => {
 
 const Position = () => {
   const { t } = useTranslation()
+  //
+  const refOpition = useRef()
+  const refTableOne = useRef(null)
+  const refTableTwo = useRef(null)
+  //
+  const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -66,6 +76,7 @@ const Position = () => {
     handleLoadTable,
     loadTable
   } = useContext(RequestContext)
+
   const campus = window.localStorage.getItem('campus')
   const semester = window.localStorage.getItem('semester')
   const navigate = useNavigate()
@@ -77,6 +88,24 @@ const Position = () => {
   const [isApproveVisible, setIsApproveVisible] = useState(true)
   const [isRejectVisible, setIsRejectVisible] = useState(true)
 
+  const steps = [
+    {
+      title: "Option",
+      description: "You can choose the option ",
+      placement: 'rightBottom',
+      target: () => refOpition.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list semesters",
+      target: () => refTableOne.current
+    },
+    {
+      title: "Table semesters",
+      description: "View list semesters",
+      target: () => refTableTwo.current
+    }
+  ]
   useEffect(() => {
     if (status.value === 'approved' || status.value === 'rejected') {
       setIsApproveVisible(false)
@@ -265,7 +294,15 @@ const Position = () => {
   return (
     <Fragment >
       <Card className='overflow-hidden'>
+        <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Student Request')}</h2>
+        <Button
+            color="secondary"
+            icon={<BsFillQuestionCircleFill />}
+
+            onClick={() => setOpenNote(true)} />
+        </div>
+        
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -273,11 +310,12 @@ const Position = () => {
               setStatus={setStatus}
               searchTerm={searchTerm}
               handleFilter={handleFilter}
+              refOpition={refOpition}
             />
           </Col>
         </Row>
         <h3 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('My Lecturer Request')}</h3>
-        <div className='react-dataTable mx-2 mb-2'>
+        <div className='react-dataTable mx-2 mb-2' ref={refTableOne}>
           <Table
             // style={{ height: windowSize.innerHeight - 280 }}
             dataSource={data}
@@ -291,7 +329,7 @@ const Position = () => {
           ></Table>
         </div>
         <h3 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('My Co-Lecturer Request')}</h3>
-        <div className='react-dataTable mx-2 mb-2'>
+        <div className='react-dataTable mx-2 mb-2' ref={refTableTwo}>
           <Table
             // style={{ height: windowSize.innerHeight - 280 }}
             dataSource={dataCo}
@@ -305,6 +343,11 @@ const Position = () => {
           ></Table>
         </div>
       </Card>
+      <Tour
+        open={openNote}
+        onClose={() => setOpenNote(false)}
+        steps={steps}
+      />
     </Fragment >
   )
 }
