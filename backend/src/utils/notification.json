@@ -1,0 +1,116 @@
+{
+    "HEAD": {
+        "ASSIGN": {
+            "LECTURER": "You are assigned to teaching class `{{className}}`.",
+            "COLECTURE": "You are assigned to be an Co-Lecturer teaching class `{{className}}`.",
+            "REVIEWER": "You are assigned as a Reviewer for class `{{className}}`.",
+            "PROJECT": "Your group was assigned to do the `{{projectName}}` project."
+        },
+        "REMOVE": {
+            "LECTURER": "",
+            "COLECTURE": "",
+            "REVIEWER": "",
+            "PROJECT": ""
+        },
+        "ITERATION": "B",
+        "GRADE": {
+            "ST": ""
+        },
+        "DEADLINE": "D",
+        "FEEDBACK": "E",
+        "INVITE": "You are invited by instructor `{{lecturerName}}` to class `{{className}}`"
+    },
+    "LECTURER": {
+        "ASSIGN": {
+            "CLASS": "You are assigned to teaching class `{{className}}`.",
+            "PROJECT": "Your group was assigned to do the `{{projectName}}` project."
+        },
+        "REMOVE": {
+            "CLASS":"Instructor `{{lecturerName}}` will now be in charge of your `{{className}}` class",
+            "LECTURER": "",
+            "COLECTURE": "",
+            "REVIEWER": "",
+            "PROJECT": ""
+        },
+        "ITERATION": "B",
+        "GRADE": {
+            "ST": ""
+        },
+        "DEADLINE": "D",
+        "FEEDBACK": "E",
+        "INVITE": "You are invited by instructor `{{lecturerName}}` to class `{{className}}`",
+        "REQUEST": {
+            "PROJECT": "You have just received a project request from team `{{teamName}}` of class `{{className}}`"
+        }
+    },
+    "COLECTURER": {
+        "ASSIGN": {
+            "CLASS": "You are assigned to be an Co-Lecturer teaching class `{{className}}`.",
+            "PROJECT": "Your group was assigned to do the `{{projectName}}` project."
+        },
+        "REMOVE": {
+            "CLASS":"You are no longer a Co-Lecturer of class `{{className}}`",
+            "LECTURER": "",
+            "COLECTURE": "",
+            "REVIEWER": "",
+            "PROJECT": ""
+        },
+        "ITERATION": "B",
+        "GRADE": {
+            "ST": ""
+        },
+        "DEADLINE": "D",
+        "FEEDBACK": "E",
+        "INVITE": "You are invited by instructor `{{lecturerName}}` to class `{{className}}`"
+    },
+    "REVIEWER": {
+        "ASSIGN": {
+            "CLASS": "You are assigned as a Reviewer for class `{{className}}`."
+        },
+        "ASSIGNRESIT":"You are assigned as a Reviewer resit for class `{{className}}`",
+        "REMOVE": {
+            "CLASS":"You are no longer a Reviewer of class `{{className}}`",
+            "LECTURER": "",
+            "COLECTURE": "",
+            "REVIEWER": "",
+            "PROJECT": ""
+        },
+        "ITERATION": "B",
+        "GRADE": {
+            "ST": ""
+        },
+        "DEADLINE": "D",
+        "FEEDBACK": "E",
+        "INVITE": "You are invited by instructor `{{lecturerName}}` to class `{{className}}`"
+    },
+    "STUDENT": {
+        "ASSIGN": {
+            "LECTURER": "You are assigned to teaching class `{{className}}`.",
+            "COLECTURE": "You are assigned to be an Co-Lecturer teaching class `{{className}}`.",
+            "REVIEWER": "You are assigned as a Reviewer for class `{{className}}`.",
+            "PROJECT": "Your group was assigned to do the `{{projectName}}` project."
+        },
+        "REMOVE": {
+            "LECTURER": "",
+            "COLECTURE": "",
+            "REVIEWER": "",
+            "PROJECT": ""
+        },
+        "ITERATION": "B",
+        "GRADE": {
+            "ST": ""
+        },
+        "DEADLINE": {
+            "ITERATION": "Lecturer {{lecturerName}} has just set a deadline for {{iterationName}}"
+        },
+        "FEEDBACK": "E",
+        "INVITE": "You are invited by instructor `{{lecturerName}}` to class `{{className}}`",
+        "REQUEST": {
+            "PROJECT": {
+                "APPROVED": "Lecturer `{{lecturerName}}` has approved your group's project request",
+                "REJECTED": "Lecturer `{{lecturerName}}` has rejected your group's project request",
+                "DUPLICATE": "Your group already has a project"
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+.even-row {
+  background-color: white;
+  /* Màu trắng */
+}
+
+.odd-row {
+  background-color: #f0f0f0;
+  /* Màu cam */
+}
+
+.ant-table-cell {
+  border: 0.5px groove #cccccc !important;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #7367f0 !important;
+  text-shadow: 0 0 0.25px currentcolor;
+}
+
+:where(.css-dev-only-do-not-override-1b0bdye).ant-tabs .ant-tabs-tab:hover {
+  color: #7367f0;
+}
+
+:where(.css-dev-only-do-not-override-1b0bdye).ant-tabs .ant-tabs-ink-bar {
+  position: absolute;
+  background: #7367f0;
+  pointer-events: none;
+}
+
+/*:where(.css-dev-only-do-not-override-1b0bdye).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #7367f0;
+}*/

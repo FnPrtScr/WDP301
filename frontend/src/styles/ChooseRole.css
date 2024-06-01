@@ -1,0 +1,124 @@
+.choose-role {
+    background-color: #eef5ff;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
+.choose-role .div {
+    background-color: #eef5ff;
+    height: 100vh;
+    position: relative;
+    width: 1265px;
+}
+
+.choose-role .overlap-group {
+    border-radius: 5px;
+    height: 49px;
+    left: 480px;
+    position: absolute;
+    top: 520px;
+    width: 302px;
+}
+
+.choose-role .rectangle {
+    background-color: #7895ff;
+    border: 1px solid;
+    border-color: #000000;
+    border-radius: 5px;
+    height: 49px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 302px;
+}
+
+.choose-role .text-wrapper {
+    color: #ffffff;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 32px;
+    font-weight: 600;
+    left: 73px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    text-align: center;
+    top: 4px;
+}
+
+.choose-role .text-wrapper-2 {
+    color: #000000;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 32px;
+    font-weight: 600;
+    left: 408px;
+    letter-spacing: 0;
+    line-height: 38.4px;
+    position: absolute;
+    top: 116px;
+    white-space: nowrap;
+    width: 534px;
+}
+
+.choose-role .this-is-the {
+    color: #000000;
+    font-family: "Inter-Light", Helvetica;
+    font-size: 15px;
+    font-weight: 300;
+    left: 427px;
+    letter-spacing: 0;
+    line-height: 18px;
+    position: absolute;
+    top: 173px;
+    width: 485px;
+}
+
+.choose-role .overlap {
+    background-size: 100% 100%;
+    height: 36px;
+    left: 532px;
+    position: absolute;
+    top: 400px;
+    width: 152px;
+}
+.choose-role .overlap-semester {
+    background-size: 100% 100%;
+    height: 36px;
+    left: 532px;
+    position: absolute;
+    top: 284px;
+    width: 152px;
+}
+
+.choose-role .text-wrapper-3 {
+    color: #000000;
+    font-family: "Inter-Light", Helvetica;
+    font-size: 15px;
+    font-weight: 300;
+    left: 35px;
+    letter-spacing: 0;
+    line-height: 18px;
+    position: absolute;
+    top: 4px;
+    white-space: nowrap;
+    width: 63px;
+}
+
+.choose-role .reshot-icon-arrow {
+    height: 19px;
+    left: 119px;
+    object-fit: cover;
+    position: absolute;
+    top: 5px;
+    width: 23px;
+}
+
+.choose-role .logo-FPT-education {
+    height: 59px;
+    left: 535px;
+    object-fit: cover;
+    position: absolute;
+    top: 40px;
+    width: 195px;
+}

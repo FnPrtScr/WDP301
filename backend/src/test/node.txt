@@ -1,0 +1,89 @@
+try {
+                await createOneClass(req);
+              } catch (error) {
+                expect(error.message).toBe("");
+              }
+
+              [[hàm bắt catch(error)]]
+
+
+================================================================================================================================
+describe('getOne', () => {
+    test('UTCID01', async () => {
+
+    });
+    test('UTCID02', async () => {
+
+    });
+    test('UTCID03', async () => {
+
+    });
+    test('UTCID04', async () => {
+
+    });
+    test('UTCID05', async () => {
+
+    });
+    test('UTCID06', async () => {
+
+    });
+    test('UTCID07', async () => {
+
+    });
+    test('UTCID08', async () => {
+
+    });
+    test('UTCID09', async () => {
+
+    });
+    test('UTCID010', async () => {
+
+    });
+});
+
+================================================================================================================================
+bắt throw (error)-so sánh bên trong dc luôn
+await expect(async () => {
+            const result = await getAllTeamInClass(req, res);
+            expect(result).toEqual({ studentsWithoutGroup: studentsWithoutGroup, findAllTeam: findAllTeam });
+        }).rejects.toThrow('Class not found');
+
+========================================================================================================================
+json: jest.fn((data) => {
+                lấy giá trị nào đó cần ở trong json
+                totalValue = data.total;
+                err = data.message
+            })
+========================================================================================================================
+const classesCount = await Class.count({where: {
+            [Op.and]: [
+                { campus_id: req.params.campus_id },
+                { semester_id: req.params.semester_id },
+                { status: true },
+                { name: { [Op.like]: `%${req.query.keyword}%` } }
+            ]
+        },})
+--hàm mãu lấy lấy hàm query
+===========================================================================================================================
+expect(res.send.mock.calls[0][0]).toBe("Class not found!");
+kiểu này cũng có thể lấy trực tiếp dữ liêu ra
+========================================================================================================================
+// Kiểm tra các phần tử trong mảng
+        result.forEach(doc => {
+            expect(doc).toHaveProperty('tid_id');
+            expect(doc).toHaveProperty('path_file_doc');
+            expect(doc).toHaveProperty('url_doc');
+            expect(doc).toHaveProperty('path_file_final_present');
+            expect(doc).toHaveProperty('iteration_id');
+            expect(doc).toHaveProperty('team_id');
+            expect(doc).toHaveProperty('Team');
+        });
+==============================================================================================================================
+expect(result.teamProjects).toHaveLength(9); //kiểm tra độ dài mảng
+============================================================================================================================
+[18/03/2024 21:39:16] Lê Văn Lâm: lamlvhe140728@fpt.edu.vn
+Lamdeptraivodich27%
+[18/03/2024 21:39:36] Nguyễn Tuấn: tuannnhe151047@fpt.edu.vn
+24302001tn@
+[18/03/2024 21:39:39] Ngọc Vũ: ngocvdhe140258@fpt.edu.vn
+ngocvu123
