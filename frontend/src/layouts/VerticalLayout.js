@@ -15,16 +15,16 @@ const VerticalLayout = props => {
   useEffect(() => {
     switch (role) {
       case '1':
-        setMenuData(navigation.filter(item => item.id >= 1 && item.id <= 5))
+        setMenuData(navigation.filter(item => item.id >= 1 && item.id <= 6))
         break
       case '2':
-        setMenuData(navigation.filter(item => item.id >= 6 && item.id <= 13))
+        setMenuData(navigation.filter(item => item.id >= 7 && item.id <= 14))
         break
       case '3':
-        setMenuData(navigation.filter(item => item.id >= 14 && item.id <= 16))
+        setMenuData(navigation.filter(item => item.id >= 15 && item.id <= 17))
         break
       case '4':
-        setMenuData(navigation.filter(item => item.id >= 17 && item.id <= 25))
+        setMenuData(navigation.filter(item => item.id >= 18 && item.id <= 26))
         break
       default:
         // Mặc định, nếu không có vai trò nào khớp

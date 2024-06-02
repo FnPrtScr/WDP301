@@ -5,40 +5,40 @@ import { ProjectOutlined, PullRequestOutlined } from "@ant-design/icons"
 
 export default [
   {
-    id: '6',
+    id: '7',
     title: 'Classes',
     icon: <Award size={12} />,
     navLink: '/lecture/class-manage'
   },
   {
-    id: '7',
+    id: '8',
     title: 'Project',
     icon: <ProjectOutlined size={12} />,
     navLink: '/lecture/project-manage'
   },
   {
-    id: '8',
+    id: '9',
     title: 'Request Topic',
     icon: <PullRequestOutlined size={12} />,
     navLink: '/lecture/student-request'
   },
   {
-    id: '9',
+    id: '10',
     title: 'MileStone',
     icon: <Users size={12} />,
     children: [
       {
-        id: '10',
+        id: '11',
         title: 'Iteration1',
         icon: <Circle size={12} />,
         navLink: '/lecture/iteration1'
       }, {
-        id: '11',
+        id: '12',
         title: 'Iteration2',
         icon: <Circle size={12} />,
         navLink: '/lecture/iteration2'
       }, {
-        id: '12',
+        id: '13',
         title: 'Iteration3',
         icon: <Circle size={12} />,
         navLink: '/lecture/iteration3'
@@ -46,7 +46,7 @@ export default [
     ]
   },
   {
-    id: '13',
+    id: '14',
     title: 'Mark Report',
     icon: <Percent size={12} />,
     navLink: '/lecture/mark-report'

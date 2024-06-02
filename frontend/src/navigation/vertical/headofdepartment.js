@@ -1,5 +1,5 @@
 // ** Icons Import
-import { Award, User, Users, BarChart, BookOpen } from 'react-feather'
+import { Award, User, Users, BarChart, BookOpen, Settings } from 'react-feather'
 export default [
     {
         id: '1',
@@ -31,5 +31,11 @@ export default [
         title: 'Mark Report',
         icon: <BookOpen size={12} />,
         navLink: '/head-of-department/mark-report'
+    },
+    {
+        id: '6',
+        title: 'Setting',
+        icon: <Settings size={12} />,
+        navLink: '/head-of-department/setting'
     }
 ]
