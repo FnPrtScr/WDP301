@@ -26,7 +26,7 @@ import { BsFillQuestionCircleFill } from 'react-icons/bs'
 
 const MySwal = withReactContent(Swal)
 
-// ** Table Header
+// ** Table Header //
 const CustomHeader = ({ handleAdd, handleImport, handleFilter, refSearch, refBtnImportClass, refBtnAdd }) => {
   const { t } = useTranslation()
   const [searchText, setSearchTerm] = useState('')
