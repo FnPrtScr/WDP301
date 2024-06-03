@@ -16,6 +16,8 @@ const MySwal = withReactContent(Swal)
 const Position = () => {
   const {
     //windowSize
+    setDataItem,
+    dataItem
   } = useContext(UserContext)
 
   const [data, setData] = useState([])
@@ -41,6 +43,19 @@ const Position = () => {
   }
   useEffect(() => {
     fetchData()
+  }, [])
+
+  const fetchData1 = () => {
+    api.settingApi.getOneSettingApi()
+      .then((rs) => {
+        setDataItem(rs)
+      }).catch((error) => {
+        console.log(error)
+      })
+  }
+
+  useEffect(() => {
+    fetchData1()
   }, [])
 
   useEffect(() => {
@@ -94,22 +109,22 @@ const Position = () => {
     } else {
       setTotalAssessment3(null)
     }
-
+    const totalAssessment = (dataItem?.assessment_1 + dataItem?.assessment_2 + dataItem?.assessment_3) / 100
     if (filteredItems1.length > 0 && filteredItems2.length > 0 && filteredItems3.length > 0) {
-      const total = ((totalAssessment1 * 0.25) + (totalAssessment2 * (1 / 3)) + (totalAssessment3 * (5 / 12)))
+      const total = ((totalAssessment1 * (dataItem?.assessment_1) / 100) + (totalAssessment2 * (dataItem?.assessment_2) / 100) + (totalAssessment3 * (dataItem?.assessment_3) / 100))
       setTotalAssessment(total.toFixed(1))
       if (total !== null && data.pointIterFinal && !data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * 0.6) + (data.pointIterFinal * 0.4)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data.pointIterFinal * (dataItem?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data.pointIterFinal < 5 ? 'error' : 'success')
         setContent(ave < 5 && data.pointIterFinal < 5 ? 'NOT PASSED' : 'PASSED')
       } else if (total !== null && !data.pointIterFinal && data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * 0.6) + (data?.getMyPointResit?.graded_pointrs * 0.4)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (dataItem?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'error' : 'success')
         setContent(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'NOT PASSED' : 'PASSED')
       } else if (total !== null && data?.pointIterFinal && data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * 0.6) + (data?.getMyPointResit?.graded_pointrs * 0.4)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (dataItem?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'error' : 'success')
         setContent(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'NOT PASSED' : 'PASSED')
@@ -159,10 +174,10 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>40.0 %</h3>
+                  <h3>{dataItem?.final_project}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>40.0 %</h3>
+                  <h3>{dataItem?.final_project}.0 %</h3>
                 </Col>
               </Row>
             </Col>
@@ -196,10 +211,10 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>40.0 %</h3>
+                  <h3>{dataItem?.final_project}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>40.0 %</h3>
+                  <h3>{dataItem?.final_project}.0 %</h3>
                 </Col>
               </Row>
             </Col>
@@ -239,16 +254,16 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>15.0 %</h3>
+                  <h3>{dataItem?.assessment_1}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>20.0 %</h3>
+                  <h3>{dataItem?.assessment_2}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>25.0 %</h3>
+                  <h3>{dataItem?.assessment_3}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>60.0 %</h3>
+                  <h3>{dataItem?.assessment_1 + dataItem?.assessment_2 + dataItem?.assessment_3}.0 %</h3>
                 </Col>
               </Row>
             </Col>
