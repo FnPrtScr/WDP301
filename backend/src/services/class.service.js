@@ -690,7 +690,7 @@ class ClassesService {
                             include: [
                                 {
                                     model: User,
-                                    attributes: ['user_id','email']
+                                    attributes: ['user_id', 'email']
                                 }
                             ]
                         },
@@ -701,7 +701,7 @@ class ClassesService {
                             include: [
                                 {
                                     model: User,
-                                    attributes: ['user_id','email']
+                                    attributes: ['user_id', 'email']
                                 }
                             ]
                         }
@@ -796,7 +796,7 @@ class ClassesService {
                             arrDataCreateReviewerClass.push(obj);
                             arrDataNoti.push(objNoti);
                         }
-                    }else if (Math.sign(reviewer) === -1 && !checkReviewer) {
+                    } else if (Math.sign(reviewer) === -1 && !checkReviewer) {
                         const findReviewersInClassExists = await ReviewerClass.findOne({ where: { reviewer_id: Math.abs(reviewer), class_id: +class_id, semester_id: semester_id, campus_id: campus_id, xnd_review: 2 } });
                         if (findReviewersInClassExists) {
                             let obj = {
@@ -1522,7 +1522,31 @@ class ClassesService {
         }
 
     }
+    async settingDeadlineRequest(req) {
+        const { campus_id, semester_id, class_id } = req.params;
+        const owner_id = req.user.id;
+        const { deadline_request } = req.body;
 
+        try {
+            const checkSemesterActive = await Semester.findOne({ where: { semester_id: semester_id, status: true } });
+            if (!checkSemesterActive) throw new ErrorResponse(404, "This semester is not working")
+            const findClass = await Class.findOne({
+                where: { class_id: class_id, campus_id: campus_id, semester_id: semester_id },
+                include: [
+                    {
+                        model: User,
+                        as: "Owner",
+                        attributes: ['user_id', 'email', 'campus_id', 'first_name', 'last_name'],
+                    }
+                ]
+            });
+            if (!findClass) throw new ErrorResponse(404, "Class not found")
+            if (findClass.owner_id !== owner_id) throw new ErrorResponse(404, `Cannot be deleted, this Class was created by Lecturer '${findClass.Owner.email}'`)
+            return await Class.update({ deadline_request: deadline_request }, { where: { class_id: class_id, campus_id: campus_id, semester_id: semester_id } });
+        } catch (error) {
+            throw error;
+        }
+    }
 
     //Student
     async getMyClass(req) {

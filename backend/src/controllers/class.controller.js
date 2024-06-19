@@ -152,6 +152,20 @@ module.exports = {
         
     }),
 
+    settingDeadlineRequest: asyncHandler(async (req, res) => {
+        try {
+            const classes = await ClassService.settingDeadlineRequest(req);
+            return res.status(201).send(successResponse(201, classes, "Setting Successfully"));
+        } catch (error) {
+            if (error instanceof ErrorResponse) {
+                return res.status(error.statusCode).send(errorResponse(error.statusCode, error.message));
+            } else {
+                return res.status(500).send(errorResponse(500, error.message));
+            }
+        }
+        
+    }),
+
     // Student
     getMyClass: asyncHandler(async (req, res, next) => {
         try {

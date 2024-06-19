@@ -22,6 +22,7 @@ router.post('/:campus_id/:semester_id/:class_id/rm', verifyTokenLecturer, ClassC
 router.put('/:campus_id/:semester_id/l/:class_id', verifyTokenLecturer, ClassController.updateOneClass);
 router.put('/:campus_id/:semester_id/:class_id/:student_id', verifyTokenLecturer, ClassController.updateStudentInMyClass);
 router.delete('/:campus_id/:semester_id/l/:class_id', verifyTokenLecturer, ClassController.deleteOneClass);
+router.post('/:campus_id/:semester_id/setting/:class_id', verifyTokenLecturer, ClassController.settingDeadlineRequest);
 
 // Student
 router.get('/:campus_id/:semester_id/s/mc', verifyTokenStudent, ClassController.getMyClass);

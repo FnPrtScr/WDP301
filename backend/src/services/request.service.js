@@ -205,6 +205,7 @@ class RequestService {
             if (!checkLeadInTeam) throw new ErrorResponse(404, "You are not the leader of the team");
             const checkTeamProject = await TeamProject.findOne({ where: { team_id: checkLeadInTeam.Team.team_id, class_id: findStudent.class_id } });
             if (checkTeamProject) throw new ErrorResponse(400, "Your group already has a project")
+            // check thời gian hiện tại với thời gian deadline
             const key = `${campus_id}:${semester_id}:student:request:project:${getLecturerId.user_id}:${findStudent.Class.class_id}:${checkLeadInTeam.Team.team_id}:${Date.now()}`;
             const findRequestExists = await RedisService.hgetall({ ...req, body: { key: key } });
             if (findRequestExists && findRequestExists.status === "processing") throw new ErrorResponse(400, "Request has already");
@@ -307,8 +308,32 @@ class RequestService {
             throw error;
         }
     }
-    async updateRequestProject(req, res, next) {
 
+    async updateRequestProject(req, res, next) {
+        const { campus_id, semester_id } = req.params;
+        const user_id = req.user.id;
+        const { status } = req.query;
+        let allData = [];
+        try {
+            const checkSemesterActive = await Semester.findOne({ where: { semester_id: semester_id, status: true } });
+            if (!checkSemesterActive) throw new ErrorResponse(404, "This semester is not working")
+            const findStudent = await UserClassSemester.findOne({
+                where: { user_id: user_id, semester_id: semester_id },
+                include: [
+                    {
+                        model: User,
+                        attributes: ['email']
+                    },
+                    {
+                        model: Class,
+                        attributes: ['class_id', 'name']
+                    }
+                ]
+            });
+            if (!findStudent) throw new ErrorResponse(404, "Student not found");
+        } catch (error) {
+            throw error;
+        }
     }
 
 

@@ -74,6 +74,9 @@ module.exports = (sequelize) => {
                     key: 'user_id',
                 },
             },
+            deadline_request: {
+                type: DataTypes.DATE,
+            },
             status: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true,
