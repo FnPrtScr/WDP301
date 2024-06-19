@@ -120,6 +120,7 @@ class TeamService {
             throw error;
         }
     }
+
     async randomTeam(req, res) {
         const { campus_id, semester_id, class_id } = req.params;
         const { not } = req.body;
@@ -138,17 +139,30 @@ class TeamService {
                 where: { class_id: class_id },
                 include: [{
                     model: User,
-                    atributes: ['email', 'first_name', 'last_name']
+                    attributes: ['email', 'first_name', 'last_name']
                 }]
             });
 
-            const result = await this.divisionDataTeam(getAllStudentInClass, not);
+            const getAllStudentInTeamUser = await TeamUser.findAll({
+                where: { class_id: class_id }
+            });
 
+            const studentIdsInTeamUser = new Set(getAllStudentInTeamUser.map(student => student.student_id));
+            const remainingStudents = getAllStudentInClass.filter(student => !studentIdsInTeamUser.has(student.user_id));
+
+            // Lấy số lượng nhóm hiện có
+            const existingTeams = await Team.findAll({
+                where: { class_id: class_id },
+                attributes: ['team_id']
+            });
+            const existingTeamCount = existingTeams.length;
+            
+            const result = await this.divisionDataTeam(remainingStudents, not);
 
             const formattedResult = result.map((team, index) => {
                 const leadIndex = Math.floor(Math.random() * team.length);
                 return {
-                    Group: index + 1,
+                    Group: existingTeamCount + index + 1,
                     TeamSize: team.length,
                     Students: team.map((obj, studentIndex) => ({
                         user_id: obj.user_id,
@@ -159,6 +173,7 @@ class TeamService {
                     })),
                 };
             });
+
             await Promise.all(formattedResult.map(async (rs) => {
                 let arrDataCreateTeamUser = [];
                 let name = `GROUP ${rs.Group}`;
