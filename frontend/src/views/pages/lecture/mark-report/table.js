@@ -282,11 +282,18 @@ const Position = () => {
       <Card className='overflow-hidden'>
         <div className='d-flex align-items-center'>
         <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('Manage Mark In Semester')}</h2>
-        <Button
-            color="secondary"
-            icon={<BsFillQuestionCircleFill />}
-
-            onClick={() => setOpenNote(true)} />
+        <div style={{
+            width: "30px",
+            height: "30px",
+            border: "gray 1px solid",
+            display: "flex",
+            cursor: "pointer",
+            justifyContent: "center",
+            marginTop: "12px",
+            alignItems: "center"
+          }}>
+            <BsFillQuestionCircleFill onClick={() => setOpenNote(true)} />
+          </div>
         </div>
         
         <Row>
