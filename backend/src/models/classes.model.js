@@ -3,7 +3,7 @@ const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
     class Class extends Model {
-        static associate({ User, Team, Project, UserClassSemester, TeamUser, Point, PointResit, ColectureClass, ImportHistory, ReviewerClass, Iteration, FinalEvaluation, LOCEvaluation, TeamProject }) {
+        static associate({ User, Team, Project, UserClassSemester,ChatGroup, TeamUser, Point, PointResit, ColectureClass, ImportHistory, ReviewerClass, Iteration, FinalEvaluation, LOCEvaluation, TeamProject }) {
             this.hasMany(UserClassSemester, { foreignKey: 'class_id' });
             this.hasMany(ColectureClass, { foreignKey: 'class_id' });
             this.hasMany(ReviewerClass, { foreignKey: 'class_id' });
@@ -18,6 +18,7 @@ module.exports = (sequelize) => {
             this.hasMany(TeamProject, { foreignKey: 'class_id' });
             this.belongsTo(User, { foreignKey: 'user_id', as: 'Lecture' });
             this.belongsTo(User, { foreignKey: 'owner_id', as: 'Owner' });
+            this.hasMany(ChatGroup, { foreignKey: 'class_id' });
 
         }
         static async deleteRelatedData(classId) {

@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
             TeamProject,
             Project,
             Team,
-            Iteration }) {
+            Iteration,Message,ChatGroup }) {
             this.hasMany(ColectureClass, { foreignKey: 'colecture_id' });
             this.hasMany(Feedback, { foreignKey: 'student_id' });
             this.hasMany(FinalEvaluation, { foreignKey: 'student_id' });
@@ -40,6 +40,8 @@ module.exports = (sequelize) => {
             this.hasMany(Project, { foreignKey: 'owner_id' });
             this.hasMany(Team, { foreignKey: 'owner_id' });
             this.belongsTo(Campus, { foreignKey: 'campus_id' });
+            this.hasMany(Message, { foreignKey: 'sender_id' });
+            this.hasMany(ChatGroup, { foreignKey: 'lecturer_id' });
         }
         static async deleteRelatedData(userId) {
             await Promise.all([
