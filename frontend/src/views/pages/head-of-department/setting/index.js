@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet'
 import { UserContext } from './useContext'
 import ModalComponent from './modal'
 import Table from './table'
+
 const SettingPage = () => {
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
@@ -12,7 +13,7 @@ const SettingPage = () => {
 
   const [openModal, setOpenModal] = useState(false)
   const [openModalDetail, setOpenModalDetail] = useState(false)
-  const [loadTable, setLoadTable] = useState(false)
+  const [updateCounter, setUpdateCounter] = useState(0) // Thay đổi từ loadTable sang updateCounter
   const [dataItem, setDataItem] = useState({})
   const [typeModal, setTypeModal] = useState('')
   const [windowSize, setWindowSize] = useState(getWindowSize())
@@ -34,8 +35,9 @@ const SettingPage = () => {
   const handleModalDetail = () => {
     setOpenModalDetail(!openModalDetail)
   }
+
   const handleLoadTable = () => {
-    setLoadTable(!loadTable)
+    setUpdateCounter(prevCounter => prevCounter + 1) 
   }
 
   const { t } = useTranslation()
@@ -44,21 +46,21 @@ const SettingPage = () => {
       <Helmet>
         <title>{t('Setting Management')} </title>
       </Helmet>
-      <UserContext.Provider value={{
-        openModal,
-        windowSize,
-        dataItem,
-        setDataItem,
-        typeModal,
-        setTypeModal,
-        loadTable,
-        handleLoadTable,
-        setLoadTable,
-        handleModal,
-        handleModalDetail,
-        openModalDetail
-      }} >
-
+      <UserContext.Provider
+        value={{
+          openModal,
+          windowSize,
+          dataItem,
+          setDataItem,
+          typeModal,
+          setTypeModal,
+          updateCounter, // Thay đổi từ loadTable sang updateCounter
+          handleLoadTable,
+          handleModal,
+          handleModalDetail,
+          openModalDetail
+        }}
+      >
         <ModalComponent />
         <Table />
       </UserContext.Provider>

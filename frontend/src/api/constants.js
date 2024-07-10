@@ -18,7 +18,10 @@ export const AUTH = {
   },
   SETTING_API: {
     UPDATE_SETTING_API: `${BASE_URL}/setting`,
-    GET_ONE_SETTING_API: `${BASE_URL}/setting`
+    GET_ONE_SETTING_API: `${BASE_URL}/setting`,
+    //
+    GET_ALL_SETTING_API: `${BASE_URL}/setting`,
+    CREATE_ONE_SETTING_API: `${BASE_URL}/setting`
   },
   SEMESTER_API: {
     GET_SEMESTER_API: `${BASE_URL}/semester/g`,
