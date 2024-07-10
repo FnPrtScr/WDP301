@@ -5,4 +5,8 @@ const { verifyToken, verifyTokenHeadOfDepartment, verifyTokenLecturer, verifyTok
 router.get('/', verifyToken, SettingController.getOne);
 router.put('/update', verifyTokenHeadOfDepartment, SettingController.updateOne);
 
+// Head
+router.get('/:campus_id/:semester_id/all', verifyToken, SettingController.getAll);
+router.post('/:campus_id/:semester_id/c', verifyTokenHeadOfDepartment, SettingController.createOne);
+
 module.exports = router;
