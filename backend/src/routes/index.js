@@ -26,6 +26,7 @@ router.use('/point', require('./point.route'))
 router.use('/request', require('./request.route'))
 router.use('/final-e', require('./finalEvaluation.route'))
 router.use('/import-history', require('./importHistory.route'))
+router.use('/chat-group', require('./chatGroup.route'))
 
 
 module.exports = router;

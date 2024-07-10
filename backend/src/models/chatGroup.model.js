@@ -9,8 +9,16 @@ module.exports = (sequelize) => {
          * The `models/index` file will call this method automatically.
          */
         static associate({ Class, User, Message, File }) {
-            this.belongsTo(Class, { foreignKey: 'class_id' });
-            this.belongsTo(User, { foreignKey: 'lecturer_id' });
+            this.belongsTo(Class, {
+                foreignKey: 'class_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+            });
+            this.belongsTo(User, {
+                foreignKey: 'lecturer_id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+            });
             this.hasMany(Message, { foreignKey: 'chat_group_id' });
             this.hasMany(File, { foreignKey: 'chat_group_id' });
         }
@@ -30,11 +38,28 @@ module.exports = (sequelize) => {
                     key: 'class_id',
                 },
             },
+            name:{
+                type: DataTypes.STRING,
+            },
             lecturer_id: {
                 type: DataTypes.INTEGER,
                 references: {
                     model: 'User',
                     key: 'user_id',
+                },
+            },
+            semester_id:{
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'Semester',
+                    key: 'semester_id',
+                },
+            },
+            campus_id:{
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'Campus',
+                    key: 'campus_id',
                 },
             },
             status:{
