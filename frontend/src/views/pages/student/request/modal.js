@@ -153,6 +153,8 @@ const ModalComponent = () => {
             notificationError(e.response.data.error)
           } else if (e.response.data.statusCode === 404) {
             notificationError(t('You are not the leader of the team'))
+          } else if (e.response.data.statusCode === 500) {
+            notificationError(t('Time to create request topic has passed'))
           } else {
             notificationError(t('Setting project fail'))
           }
