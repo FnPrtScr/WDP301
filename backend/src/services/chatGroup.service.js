@@ -1,4 +1,4 @@
-const { Campus, sequelize, ChatGroup, Class, Message, User } = require('../models')
+const { Campus, sequelize, ChatGroup, Class, Message, User ,UserClassSemester, UserRoleSemester} = require('../models')
 const moment = require("moment");
 const { ErrorResponse } = require('../utils/response');
 const dayjs = require('dayjs');
@@ -9,24 +9,58 @@ class ChatGroupService {
         const { campus_id, semester_id, class_id } = req.params;
         const user_id = req.user.id;
         try {
-            const chatGroups = await ChatGroup.findAll({
-                where: {
-                    campus_id: campus_id,
-                    semester_id: semester_id,
-                    lecturer_id: user_id
-                },
-                include: [
-                    {
-                        model: Class,
-                        attributes: ['name'],
-                    }
-                ]
-            })
-            return chatGroups
+            const userRoles = await UserRoleSemester.findAll({
+                where: { user_id, semester_id }
+            });
+            const roleIds = userRoles.map(role => role.role_id);
+            if (roleIds.includes(4) && ![1, 2, 3].some(role => roleIds.includes(role))) {
+                const userClass = await UserClassSemester.findOne({
+                    where: { user_id, semester_id }
+                });
+    
+                if (!userClass) {
+                    throw new ErrorResponse(404, "Class not found for user")
+                }
+    
+                const chatGroups = await ChatGroup.findAll({
+                    where: {
+                        campus_id,
+                        semester_id,
+                        class_id: userClass.class_id
+                    },
+                    include: [
+                        {
+                            model: Class,
+                            attributes: ['name'],
+                        }
+                    ]
+                });
+    
+                return chatGroups;
+            } else if ([1, 2, 3].some(role => roleIds.includes(role)) && !roleIds.includes(4)) {
+                const chatGroups = await ChatGroup.findAll({
+                    where: {
+                        campus_id,
+                        semester_id,
+                        lecturer_id: user_id
+                    },
+                    include: [
+                        {
+                            model: Class,
+                            attributes: ['name'],
+                        }
+                    ]
+                });
+    
+                return chatGroups;
+            } else {
+                throw new ErrorResponse(403, "Access denied!")
+            }
         } catch (error) {
             throw error;
         }
     }
+    
     async getChat(req, res) {
         const { campus_id, semester_id, chatGroupId } = req.params;
         const user_id = req.user.id;

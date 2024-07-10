@@ -205,6 +205,8 @@ class RequestService {
             if (!checkLeadInTeam) throw new ErrorResponse(404, "You are not the leader of the team");
             const checkTeamProject = await TeamProject.findOne({ where: { team_id: checkLeadInTeam.Team.team_id, class_id: findStudent.class_id } });
             if (checkTeamProject) throw new ErrorResponse(400, "Your group already has a project")
+            const getStartDateSemester=checkSemesterActive.startDate;
+            // const checkDeadlineRequest=
             const key = `${campus_id}:${semester_id}:student:request:project:${getLecturerId.user_id}:${findStudent.Class.class_id}:${checkLeadInTeam.Team.team_id}:${Date.now()}`;
             const findRequestExists = await RedisService.hgetall({ ...req, body: { key: key } });
             if (findRequestExists && findRequestExists.status === "processing") throw new ErrorResponse(400, "Request has already");
