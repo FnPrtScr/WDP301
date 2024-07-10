@@ -1,19 +1,19 @@
 // ** React Imports
 import ReactDOM from 'react-dom'
 import { useState, useEffect, useRef } from 'react'
-
+/* eslint-disable no-unused-vars */
 // ** Custom Components
 import Avatar from '@components/avatar'
 
 // ** Store & Actions
-import { sendMsg } from './store'
+import { sendMsg, selectChat } from './store'
 import { useDispatch } from 'react-redux'
 
 // ** Third Party Components
 import classnames from 'classnames'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { MessageSquare, Menu, PhoneCall, Video, Search, MoreVertical, Mic, Image, Send } from 'react-feather'
-
+import { getUserData } from '@utils'
 // ** Reactstrap Imports
 import {
   Form,
@@ -21,13 +21,9 @@ import {
   Input,
   Button,
   InputGroup,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  InputGroupText,
-  UncontrolledDropdown
+  InputGroupText
 } from 'reactstrap'
-
+import { getSocket } from '../../../serviceWorker'
 const ChatLog = props => {
   // ** Props & Store
   const { handleUser, handleUserSidebarRight, handleSidebar, store, userSidebarLeft } = props
@@ -36,53 +32,63 @@ const ChatLog = props => {
   // ** Refs & Dispatch
   const chatArea = useRef(null)
   const dispatch = useDispatch()
-
+  const socket = getSocket()
   // ** State
   const [msg, setMsg] = useState('')
-
+  const user = getUserData()
   // ** Scroll to chat bottom
   const scrollToBottom = () => {
     const chatContainer = ReactDOM.findDOMNode(chatArea.current)
     chatContainer.scrollTop = Number.MAX_SAFE_INTEGER
   }
-
-  // ** If user chat is not empty scrollToBottom
   useEffect(() => {
     const selectedUserLen = Object.keys(selectedUser).length
-
     if (selectedUserLen) {
       scrollToBottom()
     }
   }, [selectedUser])
 
-  // ** Formats chat data based on sender
+  useEffect(() => {
+    socket.on('receiveMessage', (data) => {
+      dispatch(selectChat(+data.roomId))
+    })
+    return () => {
+      socket.off('receiveMessage')
+    }
+  }, [socket])
   const formattedChatData = () => {
     let chatLog = []
-    if (selectedUser.chat) {
-      chatLog = selectedUser.chat.chat
+    if (selectedUser.chats) {
+      chatLog = selectedUser.chats
     }
 
     const formattedChatLog = []
-    let chatMessageSenderId = chatLog[0] ? chatLog[0].senderId : undefined
+    let chatMessageSenderId = chatLog[0] ? chatLog[0].sender_id : undefined
+    const chatMessageSenderName = chatLog[0] ? chatLog[0].User.email : undefined
+    const chatMessageSenderAvatar = chatLog[0] ? chatLog[0].User.avatar : undefined
     let msgGroup = {
       senderId: chatMessageSenderId,
+      senderName: chatMessageSenderName,
+      senderAvatar: chatMessageSenderAvatar,
       messages: []
     }
     chatLog.forEach((msg, index) => {
-      if (chatMessageSenderId === msg.senderId) {
+      if (chatMessageSenderId === msg.sender_id) {
         msgGroup.messages.push({
-          msg: msg.message,
-          time: msg.time
+          msg: msg.content,
+          time: msg.createdAt
         })
       } else {
-        chatMessageSenderId = msg.senderId
+        chatMessageSenderId = msg.sender_id
         formattedChatLog.push(msgGroup)
         msgGroup = {
-          senderId: msg.senderId,
+          senderId: msg.sender_id,
+          senderName: `${msg.User.last_name} ${msg.User.first_name}(${msg.User.email})`,
+          senderAvatar: msg.User.avatar,
           messages: [
             {
-              msg: msg.message,
-              time: msg.time
+              msg: msg.content,
+              time: msg.createdAt
             }
           ]
         }
@@ -92,14 +98,13 @@ const ChatLog = props => {
     return formattedChatLog
   }
 
-  // ** Renders user chat
   const renderChats = () => {
     return formattedChatData().map((item, index) => {
       return (
         <div
           key={index}
           className={classnames('chat', {
-            'chat-left': item.senderId !== 11
+            'chat-left': item.senderId !== user.user_id
           })}
         >
           <div className='chat-avatar'>
@@ -107,13 +112,18 @@ const ChatLog = props => {
               imgWidth={36}
               imgHeight={36}
               className='box-shadow-1 cursor-pointer'
-              img={item.senderId === 11 ? userProfile.avatar : selectedUser.contact.avatar}
+              img={item.senderId === user.user_id ? item.senderAvatar : item.senderAvatar}
             />
           </div>
 
           <div className='chat-body'>
-            {item.messages.map(chat => (
-              <div key={chat.msg} className='chat-content'>
+            {item.senderId !== user.user_id && (
+              <div className='chat-email'>
+                <span>{item.senderName}</span>
+              </div>
+            )}
+            {item.messages.map((chat, index) => (
+              <div key={index} className='chat-content'>
                 <p>{chat.msg}</p>
               </div>
             ))}
@@ -123,30 +133,40 @@ const ChatLog = props => {
     })
   }
 
-  // ** Opens right sidebar & handles its data
   const handleAvatarClick = obj => {
     handleUserSidebarRight()
     handleUser(obj)
   }
 
-  // ** On mobile screen open left sidebar on Start Conversation Click
   const handleStartConversation = () => {
     if (!Object.keys(selectedUser).length && !userSidebarLeft && window.innerWidth < 992) {
       handleSidebar()
     }
   }
 
-  // ** Sends New Msg
   const handleSendMsg = e => {
     e.preventDefault()
     if (msg.trim().length) {
-      dispatch(sendMsg({ ...selectedUser, message: msg }))
+      dispatch(sendMsg({ ...selectedUser, content: msg }))
+      socket.emit('sendMessage', {
+        roomId: selectedUser.contact.id,
+        message: {
+          senderId: user.user_id,
+          senderName: user.email,
+          senderAvatar: user.avatar,
+          messages: [
+            {
+              msg,
+              time: new Date().toISOString()
+            }
+          ]
+        }
+      })
       setMsg('')
     }
   }
 
-  // ** ChatWrapper tag based on chat's length
-  const ChatWrapper = Object.keys(selectedUser).length && selectedUser.chat ? PerfectScrollbar : 'div'
+  const ChatWrapper = Object.keys(selectedUser).length && selectedUser.chats ? PerfectScrollbar : 'div'
 
   return (
     <div className='chat-app-window'>
@@ -169,45 +189,17 @@ const ChatLog = props => {
                 <Avatar
                   imgHeight='36'
                   imgWidth='36'
-                  img={selectedUser.contact.avatar}
-                  status={selectedUser.contact.status}
+                  // img={selectedUser.contact.avatar}
                   className='avatar-border user-profile-toggle m-0 me-1'
-                  onClick={() => handleAvatarClick(selectedUser.contact)}
+                // onClick={() => handleAvatarClick(selectedUser.contact)}
                 />
-                <h6 className='mb-0'>{selectedUser.contact.fullName}</h6>
-              </div>
-              <div className='d-flex align-items-center'>
-                <PhoneCall size={18} className='cursor-pointer d-sm-block d-none me-1' />
-                <Video size={18} className='cursor-pointer d-sm-block d-none me-1' />
-                <Search size={18} className='cursor-pointer d-sm-block d-none' />
-                <UncontrolledDropdown className='more-options-dropdown'>
-                  <DropdownToggle className='btn-icon' color='transparent' size='sm'>
-                    <MoreVertical size='18' />
-                  </DropdownToggle>
-                  <DropdownMenu end>
-                    <DropdownItem href='/' onClick={e => e.preventDefault()}>
-                      View Contact
-                    </DropdownItem>
-                    <DropdownItem href='/' onClick={e => e.preventDefault()}>
-                      Mute Notifications
-                    </DropdownItem>
-                    <DropdownItem href='/' onClick={e => e.preventDefault()}>
-                      Block Contact
-                    </DropdownItem>
-                    <DropdownItem href='/' onClick={e => e.preventDefault()}>
-                      Clear Chat
-                    </DropdownItem>
-                    <DropdownItem href='/' onClick={e => e.preventDefault()}>
-                      Report
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+                <h6 className='mb-0'>{selectedUser.contact.name}</h6>
               </div>
             </header>
           </div>
 
           <ChatWrapper ref={chatArea} className='user-chats' options={{ wheelPropagation: false }}>
-            {selectedUser.chat ? <div className='chats'>{renderChats()}</div> : null}
+            {selectedUser.chats ? <div className='chats'>{renderChats()}</div> : null}
           </ChatWrapper>
 
           <Form className='chat-app-form' onSubmit={e => handleSendMsg(e)}>

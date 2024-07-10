@@ -22,6 +22,7 @@ import finalEvaluationApi from './final-evaluation'
 import notificationApi from './notification'
 import importHistoryApi from './import-history'
 import userApi from './user'
+import chatGroupApi from './chatGroup'
 const api = {
   ...authApi,
   ...campusApi,
@@ -46,6 +47,7 @@ const api = {
   ...finalEvaluationApi,
   ...notificationApi,
   ...importHistoryApi,
-  ...userApi
+  ...userApi,
+  ...chatGroupApi
 }
 export default api
