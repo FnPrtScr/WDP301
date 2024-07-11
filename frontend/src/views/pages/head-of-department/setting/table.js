@@ -1,7 +1,8 @@
-import { Fragment, useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState, useRef } from 'react'
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { useTranslation } from 'react-i18next'
+import { Table, Tour } from 'antd'
 import { Card, Col, Row, Button } from 'reactstrap'
 import { UserContext } from './useContext'
 import withReactContent from 'sweetalert2-react-content'
@@ -27,14 +28,31 @@ const CustomHeader = ({ handleEdit }) => {
 }
 
 const Position = () => {
+  const { t } = useTranslation()
+  // khai bao ref của những phần tử cần định nghĩa
+  const refTable = useRef(null)
   const {
     setDataItem,
     handleModal,
     setTypeModal,
-    updateCounter 
+    windowSize,
+    updateCounter
   } = useContext(UserContext)
   const [loading, setLoading] = useState(false)
   const [setting, setSetting] = useState({})
+  const [data, setData] = useState([])
+  const handleTableChange = (pagination, filters, sorter) => {
+    setCurrentPage(pagination.current)
+    setRowsPerPage(pagination.pageSize)
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter
+    })
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([])
+    }
+  }
 
   const fetchData = () => {
     setLoading(true)
@@ -43,21 +61,71 @@ const Position = () => {
       .then((rs) => {
         const lastElement = rs.data[rs.data.length - 1]
         setSetting(lastElement)
-        setLoading(false) 
+        setData(rs.data)
+        setLoading(false)
       })
       .catch(() => {
-        setLoading(false) 
+        setLoading(false)
       })
+
   }
 
   useEffect(() => {
     fetchData()
-  }, [updateCounter]) 
+  }, [updateCounter])
 
   const handleEdit = () => {
-    setDataItem({})
+    setDataItem({
+      assessment_1: data[data.length - 1].assessment_1,
+      assessment_2: data[data.length - 1].assessment_1,
+      assessment_3: data[data.length - 1].assessment_1,
+      final_project: data[data.length - 1].final_project,
+      total: '',
+      status: true
+    })
     setTypeModal('Edit')
     handleModal()
+  }
+
+  const headerColumns = [
+    {
+      title: t("ID"),
+      dataIndex: 'setting_id',
+      key: 'setting_id',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: t('Assignment 1'),
+      dataIndex: 'assessment_1',
+      key: 'assessment_1',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: t('Asignment 2'),
+      dataIndex: 'assessment_2',
+      key: 'assessment_2',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: t('Assignment 3'),
+      dataIndex: 'assessment_3',
+      key: 'assessment_3',
+      width: 150,
+      align: 'center'
+    },
+    {
+      title: t('Final Project'),
+      dataIndex: 'final_project',
+      key: 'final_project',
+      width: 150,
+      align: 'center'
+    }
+  ]
+  const getRowClassName = (record, index) => {
+    return index % 2 === 0 ? 'even-row' : 'odd-row'
   }
 
   return (
@@ -145,6 +213,23 @@ const Position = () => {
             </Col>
           </Row>
           <div style={{ borderBottom: '1px solid black', marginBottom: '50px' }}></div>
+        </div>
+        <div className='react-dataTable mx-2 pb-4' ref={refTable}>
+          <Table
+            // style={{ height: windowSize.innerHeight - 280 }}
+            dataSource={data}
+            bordered
+            columns={headerColumns}
+            // pagination={tableParams.pagination}
+            pagination={false}
+            onChange={handleTableChange}
+            loading={loading}
+            scroll={{
+              x: 0,
+              y: windowSize.innerHeight - 280
+            }}
+            rowClassName={getRowClassName}
+          />
         </div>
       </Card>
     </Fragment>

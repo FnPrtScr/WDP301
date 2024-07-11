@@ -48,7 +48,7 @@ const ModalComponent = () => {
     reset,
     formState: { errors }
   } = useForm({ defaultValues })
-
+  // console.log(dataItem)
   const handleFormOpened = () => {
     if (typeModal === 'Edit') {
       if (dataItem) {
@@ -63,7 +63,7 @@ const ModalComponent = () => {
   const handleModalClosed = () => {
     clearErrors()
     reset()
-    setDataItem({}) 
+    setDataItem({})
   }
 
   const validate = (data) => {
@@ -125,6 +125,12 @@ const ModalComponent = () => {
           if (rs.statusCode === 201) {
             handleModal() // Close modal
             handleLoadTable() // Reload table data
+            setDataItem({
+              assessment_1: parseFloat(body.assessment_1),
+              assessment_2: parseFloat(body.assessment_2),
+              assessment_3: parseFloat(body.assessment_3),
+              final_project: parseFloat(body.final_project)
+            })
             notificationSuccess(t('Update success'))
           } else {
             notificationError(t('Update fail'))
@@ -146,7 +152,7 @@ const ModalComponent = () => {
       </Fragment>
     )
   }
-  
+
   return (
     <Fragment>
       <Modal
