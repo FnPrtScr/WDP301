@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Fragment, useContext } from 'react'
 import {
   Row,
@@ -26,7 +27,8 @@ const defaultValues = {
   total: '',
   status: true
 }
-
+const campus = window.localStorage.getItem('campus')
+const semester = window.localStorage.getItem('semester')
 const ModalComponent = () => {
   const {
     openModal,
@@ -34,7 +36,8 @@ const ModalComponent = () => {
     handleLoadTable,
     setDataItem,
     dataItem,
-    typeModal } = useContext(UserContext)
+    typeModal
+  } = useContext(UserContext)
   const { t } = useTranslation()
   const {
     control,
@@ -45,9 +48,9 @@ const ModalComponent = () => {
     reset,
     formState: { errors }
   } = useForm({ defaultValues })
-
+  // console.log(dataItem)
   const handleFormOpened = () => {
-    if (typeModal === "Edit") {
+    if (typeModal === 'Edit') {
       if (dataItem) {
         setValue('assessment_1', dataItem.assessment_1)
         setValue('assessment_2', dataItem.assessment_2)
@@ -60,7 +63,7 @@ const ModalComponent = () => {
   const handleModalClosed = () => {
     clearErrors()
     reset()
-    // setDataItem({})
+    setDataItem({})
   }
 
   const validate = (data) => {
@@ -110,7 +113,7 @@ const ModalComponent = () => {
   }
 
   const onSubmit = data => {
-    if (typeModal === "Edit") {
+    if (typeModal === 'Edit') {
       if (validate(data)) {
         const body = {
           assessment_1: data.assessment_1,
@@ -118,11 +121,10 @@ const ModalComponent = () => {
           assessment_3: data.assessment_3,
           final_project: data.final_project
         }
-        api.settingApi.updateSettingApi(body).then((rs) => {
-          if (rs?.data[0] === 1) {
-            handleLoadTable()
-            handleModal()
-            // setDataItem(rs?.data)
+        api.settingApi.createOne(body, campus, semester).then((rs) => {
+          if (rs.statusCode === 201) {
+            handleModal() // Close modal
+            handleLoadTable() // Reload table data
             setDataItem({
               assessment_1: parseFloat(body.assessment_1),
               assessment_2: parseFloat(body.assessment_2),
@@ -137,6 +139,7 @@ const ModalComponent = () => {
       }
     }
   }
+
   const handleCancel = () => {
     handleModal()
   }
@@ -144,20 +147,22 @@ const ModalComponent = () => {
   const renderFooterButtons = () => {
     return (
       <Fragment>
-        <Button color='primary' className='me-1'>{t('Save')}</Button>
+        <Button color='primary' className='me-1' type="submit">{t('Save')}</Button>
         <Button color='secondary' onClick={handleCancel} outline className='me-1'>{t('Close')}</Button>
       </Fragment>
     )
   }
+
   return (
-    <Fragment >
+    <Fragment>
       <Modal
         isOpen={openModal}
         toggle={handleModal}
         onOpened={handleFormOpened}
         onClosed={handleModalClosed}
         backdrop='static'
-        className='modal-dialog-centered modal-lg'>
+        className='modal-dialog-centered modal-lg'
+      >
         <Form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader typeModal={typeModal} handleModal={handleCancel} title='Setting' />
           <ModalBody>
@@ -227,7 +232,6 @@ const ModalComponent = () => {
         </Form>
       </Modal>
     </Fragment>
-
   )
 }
 

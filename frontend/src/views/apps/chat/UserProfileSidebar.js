@@ -51,7 +51,7 @@ const UserProfileSidebar = props => {
             </li>
           </ul>
         </div>
-        <div className='more-options'>
+        {/* <div className='more-options'>
           <h6 className='section-label mb-1 mt-3'>Options</h6>
           <ul className='list-unstyled'>
             <li className='cursor-pointer mb-1'>
@@ -75,7 +75,7 @@ const UserProfileSidebar = props => {
               <span className='align-middle'>Block Contact</span>
             </li>
           </ul>
-        </div>
+        </div> */}
       </PerfectScrollbar>
     </div>
   )

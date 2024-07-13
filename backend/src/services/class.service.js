@@ -1,5 +1,5 @@
 const { Op, Sequelize } = require('sequelize');
-const { User, Campus, Class, Semester, Team, TeamUser, ImportHistory, Milestone, Iteration, UserClassSemester, UserRoleSemester, ColectureClass, ReviewerClass, Notification, sequelize } = require('../models')
+const { User, Campus, Class, Semester,ChatGroup, Team, TeamUser, ImportHistory, Milestone, Iteration, UserClassSemester, UserRoleSemester, ColectureClass, ReviewerClass, Notification, sequelize } = require('../models')
 const moment = require("moment");
 const Joi = require('joi');
 const fs = require('fs');
@@ -35,6 +35,18 @@ class ClassesService {
             const classes = await Class.create({
                 name: uppperCase(name), user_id: lecturer_id ? lecturer_id : null, campus_id: campus_id, semester_id: semester_id, quantity: quantity, owner_id: owner_id
             }, { transaction: t });
+            //create chatgroup
+            const createChatGroup=await ChatGroup.create({
+                class_id: classes.class_id,
+                lecturer_id: lecturer_id,
+                name:uppperCase(name),
+                campus_id: campus_id,
+                semester_id: semester_id
+            }, { transaction: t });
+            if (!createChatGroup){
+                throw new ErrorResponse(500, "Create Chat Group Failed!")
+            }
+            //create chatgroup
             let objFinalIter = {
                 milestone_id: findIteratioFinal[findIteratioFinal.length - 1].milestone_id,
                 name: findIteratioFinal[findIteratioFinal.length - 1].name,
@@ -378,6 +390,7 @@ class ClassesService {
                     errors.push(`Cannot be deleted, this Class was created by Lecturer '${findClass.Owner.email}'`)
                     return
                 }
+                await ChatGroup.destroy({where:{class_id:class_id,campus_id: campus_id, semester_id: semester_id,status: true }})
                 return await Class.destroy({ where: { class_id: class_id, campus_id: campus_id, semester_id: semester_id, status: true } });
             }))
             if (errors.length > 0) {

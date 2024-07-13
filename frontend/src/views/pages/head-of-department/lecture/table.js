@@ -33,43 +33,43 @@ const CustomHeader = ({ handleAdd, handleImport, handleFilter, refSearch, refBtn
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 my-1 mb-75 d-flex justify-content-between flex-wrap px-1'>
       < div className='d-flex align-items-centerm mx-50'>
-        <div ref = {refSearch}>
-        <InputGroup className='my-25'>
-          <Input
-            id='search-invoice'
-            style={{ minWidth: '200px' }}
-            placeholder={t('Search')}
-            type='search'
-            value={searchText}
-            onChange={e => {
-              if (e.target.value) {
-                setSearchTerm(e.target.value)
-              } else {
-                handleFilter('')
-                setSearchTerm(e.target.value)
-              }
-            }}
-          />
-          <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
-            <SearchOutlined></SearchOutlined>
-          </span>
-        </InputGroup>
+        <div ref={refSearch}>
+          <InputGroup className='my-25'>
+            <Input
+              id='search-invoice'
+              style={{ minWidth: '200px' }}
+              placeholder={t('Search')}
+              type='search'
+              value={searchText}
+              onChange={e => {
+                if (e.target.value) {
+                  setSearchTerm(e.target.value)
+                } else {
+                  handleFilter('')
+                  setSearchTerm(e.target.value)
+                }
+              }}
+            />
+            <span style={{ cursor: 'pointer' }} onClick={() => { handleFilter(searchText) }} className='input-group-text '>
+              <SearchOutlined></SearchOutlined>
+            </span>
+          </InputGroup>
         </div>
-        
+
         <div className='d-flex align-items-center mx-50' style={{ minWidth: "220px", maxWidth: "220px" }}>
         </div>
       </div>
       <div className='d-flex justify-content-end mx-2'>
-        <div ref = {refBtnImportLerturer}>
-        <Button className='add-new-user mx-25 my-25' color='primary' onClick={handleImport}>
-          {t('Import Lecturer')}
-        </Button>
+        <div ref={refBtnImportLerturer}>
+          <Button className='add-new-user mx-25 my-25' color='primary' onClick={handleImport}>
+            {t('Import Lecturer')}
+          </Button>
         </div>
-        <div ref = {refBtnAddLerturer}>
-        <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
-          {t('Add Lecturer')}
-        </Button>
-        </div>               
+        <div ref={refBtnAddLerturer}>
+          <Button className='add-new-semester mx-50 my-25' color='primary' onClick={handleAdd}>
+            {t('Add Lecturer')}
+          </Button>
+        </div>
       </div>
     </div >
   )
@@ -84,7 +84,7 @@ const Position = () => {
   const refTable = useRef(null)
   const refPagination = useRef(null)
   // khai báo state để mở định nghĩa
-  const [openNote, setOpenNote] = useState(false) 
+  const [openNote, setOpenNote] = useState(false)
   const {
     setDataItem,
     handleModal,
@@ -399,14 +399,21 @@ const Position = () => {
     <Fragment >
       <Card className='overflow-hidden'>
         <div className='d-flex align-items-center'>
-        <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List Lecturer')}</h2>
-        <Button
-            color="secondary"
-            icon={<BsFillQuestionCircleFill />}
-
-            onClick={() => setOpenNote(true)} />
+          <h2 style={{ fontWeight: '700' }} className='px-2 mt-2'>{t('List Lecturer')}</h2>
+          <div style={{
+            width: "30px",
+            height: "30px",
+            border: "gray 1px solid",
+            display: "flex",
+            cursor: "pointer",
+            justifyContent: "center",
+            marginTop: "12px",
+            alignItems: "center"
+          }}>
+            <BsFillQuestionCircleFill onClick={() => setOpenNote(true)} />
+          </div>
         </div>
-        
+
         <Row>
           <Col xl={12} lg={12} md={12}>
             <CustomHeader
@@ -437,10 +444,10 @@ const Position = () => {
             }}
             rowClassName={getRowClassName}
           ></Table>
-          <div ref = {refPagination}>
-          <CustomPagination />
+          <div ref={refPagination}>
+            <CustomPagination />
           </div>
-          
+
         </div>
       </Card>
       <Tour

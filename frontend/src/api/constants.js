@@ -3,6 +3,9 @@ import { PUBLIC_URL_SERVER_API } from "../dataConfig"
 export const BASE_URL = PUBLIC_URL_SERVER_API
 
 export const AUTH = {
+  CHAT_GROUP_API:{
+    GET_ALL_CHAT_GROUP_API:`${BASE_URL}/chat-group`
+  },
   NOTIFICATION_API: {
     GET_ALL_NOTI: `${BASE_URL}/noti`
   },
@@ -15,7 +18,10 @@ export const AUTH = {
   },
   SETTING_API: {
     UPDATE_SETTING_API: `${BASE_URL}/setting`,
-    GET_ONE_SETTING_API: `${BASE_URL}/setting`
+    GET_ONE_SETTING_API: `${BASE_URL}/setting`,
+    //
+    GET_ALL_SETTING_API: `${BASE_URL}/setting`,
+    CREATE_ONE_SETTING_API: `${BASE_URL}/setting`
   },
   SEMESTER_API: {
     GET_SEMESTER_API: `${BASE_URL}/semester/g`,

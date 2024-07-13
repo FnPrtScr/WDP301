@@ -217,18 +217,27 @@ const reOrderChats = (arr, from, to) => {
 // GET: Return Chats Contacts and Contacts
 // ------------------------------------------------
 mock.onGet('/apps/chat/chats-and-contacts').reply(() => {
-  const chatsContacts = data.chats.map(chat => {
-    const contact = data.contacts.find(c => c.id === chat.userId)
-    contact.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.chat[chat.chat.length - 1] }
+  console.log('abcd', data)
+  const chatsContacts = data.map(chat => {
+    console.log(chat)
+    const contact = chat
+    // contact.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.chat[chat.chat.length - 1] }
+    console.log(contact)
     return contact
   })
+  // const chatsContacts = data.chats.map(chat => {
+  //   const contact = data.contacts.find(c => c.id === chat.userId)
+  //   contact.chat = { id: chat.id, unseenMsgs: chat.unseenMsgs, lastMessage: chat.chat[chat.chat.length - 1] }
+  //   console.log(contact)
+  //   return contact
+  // })
   const profileUserData = {
     id: data.profileUser.id,
     avatar: data.profileUser.avatar,
     fullName: data.profileUser.fullName,
     status: data.profileUser.status
   }
-  return [200, { chatsContacts, contacts: data.contacts, profileUser: profileUserData }]
+  return [200, { chatsContacts, profileUser: profileUserData }]
 })
 
 // ------------------------------------------------
