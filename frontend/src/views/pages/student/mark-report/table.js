@@ -15,12 +15,11 @@ const MySwal = withReactContent(Swal)
 
 const Position = () => {
   const {
-    //windowSize
-    setDataItem,
-    dataItem
+    loadTable
   } = useContext(UserContext)
 
   const [data, setData] = useState([])
+  const [setting, setSetting] = useState({})
   const [totalAssessment1, setTotalAssessment1] = useState(null)
   const [totalAssessment2, setTotalAssessment2] = useState(null)
   const [totalAssessment3, setTotalAssessment3] = useState(null)
@@ -46,17 +45,21 @@ const Position = () => {
   }, [])
 
   const fetchData1 = () => {
-    api.settingApi.getOneSettingApi()
+    api.settingApi
+      .getAll({}, campus, semester)
       .then((rs) => {
-        setDataItem(rs)
-      }).catch((error) => {
+        const lastElement = rs.data[rs.data.length - 1]
+        setSetting(lastElement)
+        setData(rs.data)
+      })
+      .catch((error) => {
         console.log(error)
       })
   }
 
   useEffect(() => {
     fetchData1()
-  }, [])
+  }, [loadTable])
 
   useEffect(() => {
     const filteredItems1 = data && data.getMyPoint ? data.getMyPoint.filter(item => item.Iteration.name === 'Iteration 1') : []
@@ -109,22 +112,22 @@ const Position = () => {
     } else {
       setTotalAssessment3(null)
     }
-    const totalAssessment = (dataItem?.assessment_1 + dataItem?.assessment_2 + dataItem?.assessment_3) / 100
+    const totalAssessment = (setting?.assessment_1 + setting?.assessment_2 + setting?.assessment_3) / 100
     if (filteredItems1.length > 0 && filteredItems2.length > 0 && filteredItems3.length > 0) {
-      const total = ((totalAssessment1 * (dataItem?.assessment_1) / 100) + (totalAssessment2 * (dataItem?.assessment_2) / 100) + (totalAssessment3 * (dataItem?.assessment_3) / 100))
+      const total = ((totalAssessment1 * (setting?.assessment_1) / 100) + (totalAssessment2 * (setting?.assessment_2) / 100) + (totalAssessment3 * (setting?.assessment_3) / 100))
       setTotalAssessment(total.toFixed(1))
       if (total !== null && data.pointIterFinal && !data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * totalAssessment) + (data.pointIterFinal * (dataItem?.final_project) / 100)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data.pointIterFinal * (setting?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data.pointIterFinal < 5 ? 'error' : 'success')
         setContent(ave < 5 && data.pointIterFinal < 5 ? 'NOT PASSED' : 'PASSED')
       } else if (total !== null && !data.pointIterFinal && data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (dataItem?.final_project) / 100)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (setting?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'error' : 'success')
         setContent(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'NOT PASSED' : 'PASSED')
       } else if (total !== null && data?.pointIterFinal && data?.getMyPointResit?.graded_pointrs) {
-        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (dataItem?.final_project) / 100)).toFixed(1)
+        const ave = ((total * totalAssessment) + (data?.getMyPointResit?.graded_pointrs * (setting?.final_project) / 100)).toFixed(1)
         setAverage(ave)
         setColor(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'error' : 'success')
         setContent(ave < 5 && data?.getMyPointResit?.graded_pointrs < 5 ? 'NOT PASSED' : 'PASSED')
@@ -174,10 +177,10 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.final_project}.0 %</h3>
+                  <h3>{setting?.final_project}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.final_project}.0 %</h3>
+                  <h3>{setting?.final_project}.0 %</h3>
                 </Col>
               </Row>
             </Col>
@@ -211,10 +214,10 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.final_project}.0 %</h3>
+                  <h3>{setting?.final_project}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.final_project}.0 %</h3>
+                  <h3>{setting?.final_project}.0 %</h3>
                 </Col>
               </Row>
             </Col>
@@ -254,16 +257,16 @@ const Position = () => {
             <Col xl={2} lg={12} md={12}>
               <Row>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.assessment_1}.0 %</h3>
+                  <h3>{setting?.assessment_1}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.assessment_2}.0 %</h3>
+                  <h3>{setting?.assessment_2}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.assessment_3}.0 %</h3>
+                  <h3>{setting?.assessment_3}.0 %</h3>
                 </Col>
                 <Col xl={12} lg={12} md={12}>
-                  <h3>{dataItem?.assessment_1 + dataItem?.assessment_2 + dataItem?.assessment_3}.0 %</h3>
+                  <h3>{setting?.assessment_1 + setting?.assessment_2 + setting?.assessment_3}.0 %</h3>
                 </Col>
               </Row>
             </Col>
