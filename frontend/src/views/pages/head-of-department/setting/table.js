@@ -77,8 +77,8 @@ const Position = () => {
   const handleEdit = () => {
     setDataItem({
       assessment_1: data[data.length - 1].assessment_1,
-      assessment_2: data[data.length - 1].assessment_1,
-      assessment_3: data[data.length - 1].assessment_1,
+      assessment_2: data[data.length - 1].assessment_2,
+      assessment_3: data[data.length - 1].assessment_3,
       final_project: data[data.length - 1].final_project,
       total: '',
       status: true
