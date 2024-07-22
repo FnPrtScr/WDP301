@@ -63,7 +63,7 @@ const LandingPage = () => {
                             alt="Reshot illustration"
                             src={landingpage}
                         />
-                        <div className="text-wrapper">SWP391 Course Management</div>
+                        <div className="text-wrapper">WDP301 Course Management</div>
                     </div>
                     <div className="div">
                         <Button
@@ -75,7 +75,7 @@ const LandingPage = () => {
                             Login with @fpt.edu.vn
                         </Button>
                     </div>
-                    <p className="this-is-the">This is the SWP391 project management platform, managing the team&#39s work</p>
+                    <p className="this-is-the">This is the WDP301 project management platform, managing the team work</p>
                     <div className="overlap-2">
                         <Select
                             defaultValue={'--Select Campus--'}

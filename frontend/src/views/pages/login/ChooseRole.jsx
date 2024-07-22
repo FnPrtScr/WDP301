@@ -137,8 +137,8 @@ const ChooseRole = () => {
                         Continue
                     </Button>
                 </div>
-                <div className="text-wrapper-2">SWP391 Course Management</div>
-                <p className="this-is-the">This is the SWP391 project management platform, managing the team's work</p>
+                <div className="text-wrapper-2">WDP301 Course Management</div>
+                <p className="this-is-the">This is the WDP301 project management platform, managing the team's work</p>
                 <div className="overlap-semester">
                     {Object?.keys(userdata)?.length > 0 ? (
                         <Select
